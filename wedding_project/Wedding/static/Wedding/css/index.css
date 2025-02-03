@@ -1,0 +1,188 @@
+body {
+    background-color: lightgray;
+}
+
+.hero {
+    width: 100%;
+    height: 90vh; /* Adjust height as needed */
+    background-image: url("../images/wedding_banner.jpg"); /* Ensure correct path */
+    background-size: 100% auto;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+    padding: 20px;
+}
+
+.hero img {
+    max-width: 100%;         /* Image lai responsive banauna */
+    height: auto;            /* Maintain aspect ratio */
+    margin-top: 20px;        /* Thoda gap halna */
+}
+
+.hero h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    
+}
+
+.hero p {
+    font-size: 1.5rem;
+    max-width: 700px;
+    margin-bottom: 20px;
+}
+
+.hero img {
+    display: none;
+}
+
+
+.venues {
+    background-color: #f8f9fa; /* Light gray background */
+    padding: 60px 0;
+}
+
+.venues h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap; /* Ensures responsiveness */
+    justify-content: center; /* Centers the cards */
+    gap: 20px; /* Adds spacing between cards */
+}
+
+.card {
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-img-top {
+    height: 200px; /* Uniform image height */
+    object-fit: cover; /* Crop image to fit */
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+.card-body {
+    padding: 20px;
+    text-align: center;
+}
+
+.card-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 15px;
+}
+
+.btn-primary {
+    background-color: #ff6f61;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #e35d50;
+}
+
+
+
+
+/* Featured Services Section */
+.featured-services {
+    background-color: #fff;
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.featured-services h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 40px;
+}
+
+/* Services Container */
+.services-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap; /* Responsive design */
+}
+
+/* Individual Service Card */
+.service-card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 320px; /* Adjust width */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 20px;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Service Images */
+.service-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+/* Service Title */
+.service-card h3 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #444;
+    margin: 15px 0;
+}
+
+/* Service Description */
+.service-card p {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+/* Service Button */
+.service-button {
+    display: inline-block;
+    text-decoration: none;
+    background-color: #ff6f61;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+.service-button:hover {
+    background-color: #e35d50;
+}

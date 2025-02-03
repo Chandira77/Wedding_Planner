@@ -1,0 +1,90 @@
+<!-- templates/home.html -->
+{% extends 'base_generic.html' %}
+{% load static %}
+
+
+{% block content %}
+    <link rel="stylesheet" type="text/css" href="{% static 'Wedding/css/index.css' %}">
+    <section class="hero">
+        <h1>Welcome to Your Dream Wedding Organizer</h1>
+        <p>Plan your perfect wedding with us. Discover services, locations, and ideas to make your day special.</p>
+        
+    </section>
+    <section class="venues py-5">
+        <div class="container">
+            <h2 class="text-center mb-4">Venues</h2>
+            <div class="row">
+                <!-- Venue Type 1: Temple -->
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card h-100 text-center">
+                        <img src="{% static 'Wedding/images/pashupati_temple.jpg' %}" class="card-img-top" alt="Temple">
+                        <div class="card-body">
+                            <h5 class="card-title">Temple</h5>
+                            <a href="{% url 'venue_type' 'temple' %}" class="btn btn-primary">Explore Venue</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Venue Type 2: Hotel -->
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card h-100 text-center">
+                        <img src="{% static 'Wedding/images/hotel.jpg' %}" class="card-img-top" alt="Hotel">
+                        <div class="card-body">
+                            <h5 class="card-title">Hotel</h5>
+                            <a href="{% url 'venue_type' 'hotel' %}" class="btn btn-primary">Explore Venue</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Venue Type 3: Banquet -->
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card h-100 text-center">
+                        <img src="{% static 'Wedding/images/restaurant.jpg' %}" class="card-img-top" alt="Banquet">
+                        <div class="card-body">
+                            <h5 class="card-title">Banquet</h5>
+                            <a href="{% url 'venue_type' 'banquet' %}" class="btn btn-primary">Explore Venue</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Venue Type 4: Church -->
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card h-100 text-center">
+                        <img src="{% static 'Wedding/images/church.jpg' %}" class="card-img-top" alt="Church">
+                        <div class="card-body">
+                            <h5 class="card-title">Church</h5>
+                            <a href="{% url 'venue_type' 'church' %}" class="btn btn-primary">Explore Venue</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="featured-services">
+        <h2>Our Featured Services</h2>
+        <div class="services-container">
+            <!-- Service 1: Venue Selection -->
+            <div class="service-card">
+                <img src="{% static 'Wedding/images/venue_selection.jpg' %}" alt="Venue Selection">
+                <h3>Venue Selection</h3>
+                <p>We offer the best venues that suit your style and budget.</p>
+                <a href="{% url 'venue_search' %}" class="service-button">Explore Venues</a>
+            </div>
+
+            <!-- Service 2: Photography/Videography -->
+            <div class="service-card">
+                <img src="{% static 'Wedding/images/audio_videography.jpg' %}" alt="Photography and Videography">
+                <h3>Photography & Videography</h3>
+                <p>Capture every moment with our professional photographers and videographers.</p>
+                <a href="{% url 'photography' %}" class="service-button">Explore Photography</a>
+            </div>
+
+            <!-- Service 3: Catering -->
+            <div class="service-card">
+                <img src="{% static 'Wedding/images/catering.jpg' %}" alt="Catering Services">
+                <h3>Catering Services</h3>
+                <p>World-class catering options to make your wedding unforgettable.</p>
+                <a href="{% url 'catering' %}" class="service-button">Explore Catering</a>
+
+            </div>
+        </div>
+    </section>
+{% endblock %}

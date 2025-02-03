@@ -1,0 +1,72 @@
+/* Ensure global styles don't interfere */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Header container */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: red; /* Light grey background */
+    padding: 10px 20px;
+    border-bottom: 2px solid #ddd; /* Subtle bottom border */
+}
+
+/* Logo styling */
+.logo img {
+    width: 120px; /* Adjust based on your actual logo size */
+    height: auto;
+}
+
+/* Search bar styling */
+.search-bar {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%; /* Adjust width as needed */
+    text-align: center;
+}
+
+.search-bar input {
+    width: 100%;
+    max-width: 400px;
+    padding: 8px 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+}
+
+/* Email ID styling */
+.email-id {
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+.email-id p {
+    font-size: 16px;
+    color: #333;
+    font-weight: bold;
+}
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .search-bar {
+        margin: 10px 0;
+    }
+
+    .search-bar input {
+        width: 90%;
+    }
+
+    .email-id p {
+        font-size: 14px;
+    }
+}

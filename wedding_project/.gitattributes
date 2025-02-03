@@ -1,0 +1,16 @@
+# Set default behavior to automatically normalize line endings
+* text=auto
+
+# Mark .py files as text files
+*.py text
+
+# Mark .sqlite3 files as binary
+*.sqlite3 binary
+
+# Set default merge driver for text files
+*.html merge=union
+*.css merge=union
+*.js merge=union
+
+# Exclude .env and other sensitive data from being tracked
+.env   export-ignore

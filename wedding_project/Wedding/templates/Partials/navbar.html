@@ -1,0 +1,75 @@
+<!-- templates/partials/navbar.html -->
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <!-- Logo -->
+        <a class="navbar-brand" href="{% url 'index' %}"></a>
+        
+        <!-- Toggle Button for Mobile View -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" 
+            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <!-- Navbar Links -->
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav ms-auto">
+                
+                <!-- Home Link -->
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}" href="{% url 'index' %}">index</a>
+                </li>
+                
+                <!-- Venue Link (Separate Navbar Item) -->
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'venue_search' %}active{% endif %}" href="{% url 'venue_search' %}">Venue</a>
+                </li>
+                
+                <!-- Services Dropdown (Without Venue) -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {% if request.path|slice:":9" == '/services' %}active{% endif %}" href="#" id="servicesDropdown" role="button" 
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        Services
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="servicesDropdown">
+                        <li><a class="dropdown-item" href="{% url 'photography' %}">Photography</a></li>
+                        <li><a class="dropdown-item" href="{% url 'catering' %}">Catering</a></li>
+                        <li><a class="dropdown-item" href="{% url 'decorations' %}">Decorations</a></li>
+                        <!-- Add more services here if needed -->
+                    </ul>
+                </li>
+                
+                <!-- Actor Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {% if request.path|slice:":7" == '/actor' %}active{% endif %}" href="#" id="actorDropdown" role="button" 
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        Actor
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="actorDropdown">
+                        <li><a class="dropdown-item" href="{% url 'user_page' %}">User</a></li>
+                        <li><a class="dropdown-item" href="{% url 'admin_page' %}">Admin</a></li>
+                        <li><a class="dropdown-item" href="{% url 'guest_page' %}">Guest</a></li>
+                        <li><a class="dropdown-item" href="{% url 'seller_page' %}">Seller</a></li>
+                    </ul>
+                </li>
+                
+                <!-- Contact Link -->
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'contact' %}">Contact</a>
+                </li>
+                
+                <!-- Authentication Links -->
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}" href="{% url 'login' %}">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'register' %}active{% endif %}" href="{% url 'register' %}">
+                        Register
+                    </a>
+                    
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</nav>

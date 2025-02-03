@@ -1,0 +1,30 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Wedding Planner</title>
+    
+    <!-- Global CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'Wedding/css/style.css' %}">
+
+    <!-- Partials CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'Partials/css/header.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'Partials/css/navbar.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'Partials/css/footer.css' %}">
+</head>
+<body>
+
+    {% include 'Partials/header.html' %}  {# ✅ Header Include #}
+    {% include 'Partials/navbar.html' %}
+
+    {% block content %}
+    {% endblock %}
+
+    {% include 'Partials/footer.html' %}
+
+    <!-- JavaScript Files -->
+    <script src="{% static 'Partials/js/header.js' %}"></script>
+    <script src="{% static 'Wedding/js/main.js' %}"></script>
+</body>
+</html>
