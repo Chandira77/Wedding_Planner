@@ -1,0 +1,19 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+
+{% block content %}
+    <h1> this is seller page</h1>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Add Venue</button>
+    </form>
+    
+    <h3>Your Venues</h3>
+    <ul>
+        {% for venue in venues %}
+            <li>{{ venue.name }} - {{ venue.location }} - ${{ venue.price }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

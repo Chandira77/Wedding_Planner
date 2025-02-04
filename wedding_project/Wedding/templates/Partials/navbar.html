@@ -22,7 +22,7 @@
                 
                 <!-- Venue Link (Separate Navbar Item) -->
                 <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.url_name == 'venue_search' %}active{% endif %}" href="{% url 'venue_search' %}">Venue</a>
+                    <a class="nav-link {% if request.resolver_match.url_name == 'venue' %}active{% endif %}" href="{% url 'venue' %}">Venue</a>
                 </li>
                 
                 <!-- Services Dropdown (Without Venue) -->

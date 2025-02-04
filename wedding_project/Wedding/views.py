@@ -10,16 +10,14 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-
-
-# wedding/views.py
+from .forms import VenueForm
 from django.shortcuts import render, get_object_or_404
 from django import forms
 from .models import Venue 
-from .forms import VenueSearchForm  
 
 def index(request):
-    return render(request, 'Wedding/index.html')
+    venues = Venue.objects.all() 
+    return render(request, 'Wedding/index.html', {'venues': venues})
 
 class ExampleForm(forms.Form):
     example_input = forms.CharField(label='Example Input', max_length=100)
@@ -28,8 +26,8 @@ def test_view(request):
     form = ExampleForm()
     return render(request, 'Wedding/test.html', {'form': form})
 
-def venue_search(request):
-    form = VenueSearchForm(request.GET or None)
+def venue(request):
+    form = VenueForm(request.GET or None)
     venues = Venue.objects.all()
 
     if form.is_valid():
@@ -62,21 +60,21 @@ def venue_search(request):
         'form': form,
         'venues': venues,
     }
-    return render(request, 'Wedding/venue_search.html', context)
+    return render(request, 'Wedding/venue.html', context)
+
+@login_required(login_url='/login/')  # Booking requires login
+def book_venue(request, venue_id):
+    venue = Venue.objects.get(id=venue_id)
+    return render(request, 'Wedding/booking.html', {'venue': venue})
 
 def venue_type(request, venue_type):
-    # Corrected filter field from 'type' to 'venue_type'
-    venues = Venue.objects.filter(venue_type__iexact=venue_type)
-    
-    context = {
-        'venues': venues,
-        'venue_type': venue_type.capitalize(),
-    }
-    return render(request, 'Wedding/venue_type.html', context)
+    return render(request, 'Wedding/venue_type.html', {'venue_type': venue_type})
 
-def venue_detail(request, venue_id):
-    venue = get_object_or_404(Venue, id=venue_id)
-    return render(request, 'Wedding/venue_detail.html', {'venue': venue})
+
+
+
+
+
 
 def photography(request):
     return render(request, 'Wedding/photography.html')
@@ -100,10 +98,21 @@ def admin_page(request):
 def guest_page(request):
     return render(request, 'Wedding/guest.html')
 
+
+@login_required(login_url='/login/')  # Seller must be logged in
 def seller_page(request):
-    return render(request, 'Wedding/seller.html')
+    if request.method == 'POST':
+        form = VenueForm(request.POST, request.FILES)
+        if form.is_valid():
+            venue = form.save(commit=False)
+            venue.seller = request.user  # Set seller to the logged-in user
+            venue.save()
+            return redirect('Wedding/seller.html')
+    else:
+        form = VenueForm()
 
-
+    venues = Venue.objects.filter(seller=request.user)  # Show only seller's venues
+    return render(request, 'Wedding/seller.html', {'form': form, 'venues': venues})
 
 
 

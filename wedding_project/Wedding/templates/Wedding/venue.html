@@ -1,0 +1,26 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+
+{% block content %}
+    <h2>Available Venues</h2>
+
+<div class="venue-list">
+    {% for venue in venues %}
+    <div class="venue-card">
+        <img src="{{ venue.photo.url }}" alt="{{ venue.name }}" width="200">
+        <h3>{{ venue.name }}</h3>
+        <p>Location: {{ venue.location }}</p>
+        <p>Price: ${{ venue.price }}</p>
+        <p>Capacity: {{ venue.capacity }} people</p>
+        <p>Amenities: {{ venue.amenities }}</p>
+        <p>Availability: {{ venue.availability }}</p>
+        
+        <a href="{% if user.is_authenticated %}{% url 'book_venue' venue.id %}{% else %}{% url 'login' %}{% endif %}" class="btn btn-primary">
+            Book Now
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
