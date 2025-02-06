@@ -1,0 +1,26 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+{% block content %}
+<h2>Booking Requests</h2>
+<table class="table">
+    <tr>
+        <th>Venue</th>
+        <th>User</th>
+        <th>Booking Date</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+    {% for booking in bookings %}
+    <tr>
+        <td>{{ booking.venue.name }}</td>
+        <td>{{ booking.user.username }}</td>
+        <td>{{ booking.booking_date }}</td>
+        <td>{{ booking.status }}</td>
+        <td>
+            <a href="{% url 'update_booking_status' booking.id 'Approved' %}" class="btn btn-success">Approve</a>
+            <a href="{% url 'update_booking_status' booking.id 'Rejected' %}" class="btn btn-danger">Reject</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

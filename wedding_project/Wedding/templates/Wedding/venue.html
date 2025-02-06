@@ -3,24 +3,150 @@
 
 
 {% block content %}
-    <h2>Available Venues</h2>
+<link rel="stylesheet" type="text/css" href="{% static 'Wedding/css/venue.css' %}">
+<h2>Available Venues</h2>
 
-<div class="venue-list">
-    {% for venue in venues %}
-    <div class="venue-card">
-        <img src="{{ venue.photo.url }}" alt="{{ venue.name }}" width="200">
-        <h3>{{ venue.name }}</h3>
-        <p>Location: {{ venue.location }}</p>
-        <p>Price: ${{ venue.price }}</p>
-        <p>Capacity: {{ venue.capacity }} people</p>
-        <p>Amenities: {{ venue.amenities }}</p>
-        <p>Availability: {{ venue.availability }}</p>
+<div class="container">
+    <div class="row">
+        <!-- Left Column: Filters -->
+        <div class="col-md-4">
+            <h3>Filter Venues</h3>
+
+            <!-- Venue Type -->
+            <label for="venueType">Venue Type:</label>
+            <select id="venueType" class="form-control">
+                <option value="all">All Types</option>
+                <option value="hotel">Hotel</option>
+                <option value="restaurant">Restaurant</option>
+                <option value="church">Church</option>
+                <option value="temple">Temple</option>
+                <option value="banquet">Banquet</option>
+            </select>
+
+            <!-- City -->
+            <label for="city">City:</label>
+            <input type="text" id="city" class="form-control" placeholder="Enter city name">
+
+            <!-- Number of Guests -->
+            <h5>Number of Guests:</h5>
+            <label><input type="checkbox" name="guest_number" value="0-99"> 0-99</label>
+            <label><input type="checkbox" name="guest_number" value="100-199"> 100-199</label>
+            <label><input type="checkbox" name="guest_number" value="200-299"> 200-299</label>
+            <label><input type="checkbox" name="guest_number" value="300-399"> 300-399</label>
+            <label><input type="checkbox" name="guest_number" value="400+"> 400+</label>
+
+            <!-- Settings -->
+            <h5>Settings:</h5>
+            <label><input type="checkbox" name="settings" value="indoor"> Indoor</label>
+            <label><input type="checkbox" name="settings" value="outdoor"> Outdoor</label>
+
+            <!-- Amenities -->
+            <h5>Amenities:</h5>
+            <label><input type="checkbox" name="amenities" value="catering"> Catering</label>
+            <label><input type="checkbox" name="amenities" value="cleanup"> Cleanup</label>
+            <label><input type="checkbox" name="amenities" value="wifi"> WiFi</label>
+            <label><input type="checkbox" name="amenities" value="bar_service"> Bar Service</label>
+
+            <!-- Apply Filters -->
+            <button id="apply_filter">Apply Filter</button>
+        </div>
+
+        <!-- Right Column: Venue Listings -->
+        <div class="col-md-8"></div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2>Available Venues</h2>
+                <div>
+                    <label for="sort_by">Sort by:</label>
+                    <select id="sort_by" class="form-control" onchange="applySort()">
+                        <option value="">Default</option>
+                        <option value="price_low_to_high">Price: Low to High</option>
+                        <option value="price_high_to_low">Price: High to Low</option>
+                        <option value="rating">Highest Rated</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
         
-        <a href="{% if user.is_authenticated %}{% url 'book_venue' venue.id %}{% else %}{% url 'login' %}{% endif %}" class="btn btn-primary">
-            Book Now
-        </a>
+        
+        <div id="venueResults">
+            {% for venue in venues %}
+                <div class="venue-item d-flex">
+                     <!-- Venue Image -->
+                    <img src="{{ venue.photo.url }}" alt="{{ venue.name }}" class="venue-img">
+
+                    <!-- Venue Details -->
+                    <div class="venue-details">
+                        <h4>{{ venue.name }}</h4>
+                        <p><strong>Rating:</strong> ⭐⭐⭐⭐</p>
+                        <p>{{ venue.about }}</p>
+                        <p><strong>Services:</strong> {{ venue.amenities }}</p>
+                        <button class="btn btn-success">Request Pricing</button>
+                    </div>
+                </div>
+            {% empty %}
+                <p>No venues found.</p>
+            {% endfor %}
+        </div>
+        
+
+        <div class="pagination mt-4">
+            {% if venues.has_previous %}
+                <a href="?page=1">First</a>
+                <a href="?page={{ venues.previous_page_number }}">Previous</a>
+            {% endif %}
+            
+            <span>Page {{ venues.number }} of {{ venues.paginator.num_pages }}</span>
+            
+            {% if venues.has_next %}
+                <a href="?page={{ venues.next_page_number }}">Next</a>
+                <a href="?page={{ venues.paginator.num_pages }}">Last</a>
+            {% endif %}
+        </div>
     </div>
-    {% endfor %}
 </div>
+
+
+
+<script>
+document.getElementById("applyFilters").addEventListener("click", function() {
+    let venueType = document.getElementById("venueType").value;
+    let city = document.getElementById("city").value;
+    let guestNumbers = [...document.querySelectorAll("input[name='guest_number']:checked")].map(cb => cb.value);
+    let settings = [...document.querySelectorAll("input[name='settings']:checked")].map(cb => cb.value);
+    let amenities = [...document.querySelectorAll("input[name='amenities']:checked")].map(cb => cb.value);
+
+    let params = new URLSearchParams({
+        venue_type: venueType,
+        city: city,
+        guest_number: guestNumbers.join(','),
+        settings: settings.join(','),
+        amenities: amenities.join(',')
+    });
+
+    fetch(`/venues/?${params.toString()}`, {
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
+    })
+    .then(response => response.json())
+    .then(data => {
+        let venueResults = document.getElementById("venueResults");
+        venueResults.innerHTML = "";
+
+        data.venues.forEach(venue => {
+            venueResults.innerHTML += `
+                <div class="venue-item d-flex">
+                    <img src="${venue.photo}" class="venue-img">
+                    <div class="venue-details">
+                        <h4>${venue.name}</h4>
+                        <p><strong>Rating:</strong> ⭐⭐⭐⭐</p>
+                        <p>${venue.about}</p>
+                        <button class="btn btn-success">Request Pricing</button>
+                    </div>
+                </div>
+            `;
+        });
+    });
+});
+</script>
 
 {% endblock %}

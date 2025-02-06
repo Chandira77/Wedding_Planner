@@ -5,4 +5,4 @@ from .models import Venue
 class VenueForm(forms.ModelForm):
     class Meta:
         model = Venue
-        fields = ['name', 'location', 'price', 'capacity', 'amenities', 'availability', 'photo']
+        fields = ['name', 'description', 'city', 'price', 'capacity', 'amenities', 'availability', 'image']

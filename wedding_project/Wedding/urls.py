@@ -3,7 +3,7 @@
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
-from Wedding.views import photography, catering, decorations, contact, test_view, venue
+from Wedding.views import photography, catering, decorations, contact, test_view, venue, add_venue, booking_requests
 
 
 urlpatterns = [
@@ -25,8 +25,16 @@ urlpatterns = [
     path('actor/guest/', views.guest_page, name='guest_page'),
     path('actor/seller/', views.seller_page, name='seller_page'),
 
-    # registration templates
-    #path('login/', views.login_view, name='login'),
+
+    path('actor/seller/add_venue/', views.add_venue, name='add_venue'),  # Add venue for sellers
+    path('actor/seller/manage_listings/', views.manage_listings, name='manage_listings'),  # Manage venue listings
+    path('actor/seller/booking_requests/', views.booking_requests, name='booking_requests'),  # View booking requests (accept/reject)
+    path('actor/seller/reviews/', views.seller_reviews, name='seller_reviews'),  # Seller's reviews page
+    path('actor/seller/payment_management/', views.payment_management, name='payment_management'),  # Seller's payment and revenue page
+    path('actor/seller/edit_venue/<int:venue_id>/', views.edit_venue, name='edit_venue'),
+    path('actor/seller/delete-venue/<int:venue_id>/', views.delete_venue, name='delete_venue'),
+
+
    
-    #path('dashboard/', views.account_dashboard, name='account_dashboard'),
+    
 ]
