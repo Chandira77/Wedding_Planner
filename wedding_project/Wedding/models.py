@@ -16,9 +16,26 @@ class Venue(models.Model):
     image = models.ImageField(upload_to='venue_images/', null=True, blank=True)
     rating = models.FloatField(default=0)
     status = models.CharField(max_length=20, choices=[('Available', 'Available'), ('Unavailable', 'Unavailable')], default='Available')
+    base_price = models.IntegerField(default=0)
+    extra_guest_price = models.IntegerField(default=0)
+    amenities_price = models.JSONField(default=dict)
 
     def __str__(self):
         return self.name
+    
+
+class PricingRequest(models.Model):
+    venue = models.ForeignKey(Venue, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    event_date = models.DateField()
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Pricing Request from {self.first_name} {self.last_name} for {self.venue.name}"
 
 
 class Booking(models.Model):

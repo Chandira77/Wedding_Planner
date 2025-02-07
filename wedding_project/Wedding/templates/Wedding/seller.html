@@ -46,5 +46,44 @@
             </tbody>
         </table>
     </div>
+
+    <h3 class="mt-5">Set Venue Pricing</h3>
+    <form id="set_price_form" method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label>Base Price:</label>
+            <input type="number" id="base_price" name="base_price" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label>Extra Guest Price (per guest):</label>
+            <input type="number" id="extra_guest_price" name="extra_guest_price" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label>Select Amenities:</label><br>
+            <input type="checkbox" name="amenities" value="WiFi" data-price="100"> WiFi ($100)
+            <input type="checkbox" name="amenities" value="Decor" data-price="500"> Decor ($500)
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Pricing</button>
+    </form>
+
+<script>
+document.getElementById("set_price_form").addEventListener("submit", function(event) {
+    event.preventDefault();
+    
+    let formData = new FormData(this);
+    fetch("{% url 'save_pricing' %}", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => alert("Pricing Saved Successfully!"))
+    .catch(error => console.error("Error:", error));
+});
+</script>
+
+
 </div>
 {% endblock %}

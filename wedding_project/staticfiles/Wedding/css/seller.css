@@ -1,0 +1,124 @@
+/* seller.css */
+
+/* General Styles for Seller Dashboard */
+.container {
+    margin-top: 30px;
+    padding: 20px;
+}
+
+h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+h3 {
+    font-size: 2rem;
+    color: #34495e;
+}
+
+/* Button Group Styles */
+.btn-group {
+    display: flex;
+    justify-content: flex-start;
+    gap: 15px;
+}
+
+.btn-group .btn {
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    text-align: center;
+    border-radius: 5px;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border: none;
+}
+
+.btn-info {
+    background-color: #17a2b8;
+    border: none;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border: none;
+}
+
+/* Table Styles */
+.table-responsive {
+    margin-top: 20px;
+}
+
+.table {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.table th,
+.table td {
+    padding: 12px;
+    text-align: left;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-weight: bold;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f2f2f2;
+}
+
+.table-striped tbody tr:nth-of-type(even) {
+    background-color: #fff;
+}
+
+.table td {
+    color: #555;
+}
+
+/* Action Buttons in Table */
+.btn-warning {
+    background-color: #ffc107;
+    border: none;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+}
+
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 0.9rem;
+}
+
+.btn:hover {
+    opacity: 0.8;
+}
+
+/* Empty State Message */
+td[colspan="4"] {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #888;
+}
+
+td[colspan="4"] a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+td[colspan="4"] a:hover {
+    text-decoration: underline;
+}

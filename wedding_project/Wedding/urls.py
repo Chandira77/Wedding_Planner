@@ -3,15 +3,20 @@
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
-from Wedding.views import photography, catering, decorations, contact, test_view, venue, venue_list, add_venue, booking_requests
+from Wedding.views import photography, catering, decorations, contact, test_view, venue, venue_detail, save_pricing, calculate_price, request_pricing, send_request, add_venue, booking_requests
 
 
 urlpatterns = [
     path('', views.index, name='index'),
     #path('services/', ServicesView.as_view(), name='services'),
     path('venues/', venue, name='venue'),
-    path("venues/", venue_list, name="venue_list"),
+    #path('venues/', venue_list, name='venues_list'),
+    path('venues/<int:venue_id>/', venue_detail, name='venue_detail'),
     path('book/venue/<int:venue_id>/', views.book_venue, name='book_venue'),
+    path("save-pricing/", save_pricing, name="save_pricing"),
+    path("calculate-price/", calculate_price, name="calculate_price"),
+    path("request-pricing/", request_pricing, name="request_pricing"),
+    path("send-request/", send_request, name="send_request"),
     path('<str:venue_type>/', views.venue_type, name='venue_type'),
     path('services/photography/', photography, name='photography'),
     path('services/catering/', views.catering, name='catering'),

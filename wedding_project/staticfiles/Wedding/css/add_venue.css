@@ -1,0 +1,86 @@
+/* add_venue.css */
+
+/* General Styles for Add Venue Page */
+.container {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f4f7fc;  /* Light background for the container */
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #333;  /* Darker text for better contrast */
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/* Form Styles */
+form {
+    max-width: 700px;
+    margin: 0 auto;
+    background-color: #ffffff;  /* White background for the form */
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05); /* Light shadow around the form */
+}
+
+form .form-group {
+    margin-bottom: 20px;
+}
+
+form .form-group label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #5f6368; /* Soft gray color for labels */
+}
+
+form .form-group input,
+form .form-group select,
+form .form-group textarea {
+    width: 100%;
+    padding: 14px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #ced4da;  /* Light gray border */
+    background-color: #fafafa;  /* Slightly gray background for inputs */
+    margin-top: 8px;
+}
+
+form .form-group input:focus,
+form .form-group select:focus,
+form .form-group textarea:focus {
+    border-color: #007bff;  /* Blue border on focus */
+    background-color: #fff; /* White background on focus */
+    outline: none;
+}
+
+form button[type="submit"] {
+    padding: 12px 20px;
+    font-size: 1.1rem;
+    background-color: #28a745;  /* Fresh green color */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+
+form button[type="submit"]:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+
+/* Responsiveness for smaller screens */
+@media (max-width: 768px) {
+    form {
+        padding: 30px 20px;
+    }
+
+    form button[type="submit"] {
+        padding: 10px 15px;
+    }
+}

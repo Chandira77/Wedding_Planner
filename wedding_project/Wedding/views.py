@@ -9,8 +9,10 @@ from .forms import VenueForm
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django import forms
-from .models import Venue,  Booking, Review, SellerEarnings
+from .models import Venue,  Booking, Review, SellerEarnings, PricingRequest
+import json
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 def index(request):
     venues = Venue.objects.all() 
@@ -82,9 +84,12 @@ def venue_list(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':  # AJAX request
         venue_type = request.GET.get('venue_type', '')
         city = request.GET.get('city', '')
-        guest_numbers = request.GET.get('guest_number', '').split(',')
-        settings = request.GET.get('settings', '').split(',')
-        amenities = request.GET.get('amenities', '').split(',')
+        guest_numbers = request.GET.getlist('guest_number')  # Use getlist for multiple selections
+        settings = request.GET.getlist('settings')
+        amenities = request.GET.getlist('amenities')
+        min_price = request.GET.get('min_price', '')
+        max_price = request.GET.get('max_price', '')
+        sort_by = request.GET.get('sort_by', '')
 
         venues = Venue.objects.all()
 
@@ -97,14 +102,34 @@ def venue_list(request):
         if settings:
             venues = venues.filter(settings__in=settings)
         if amenities:
-            venues = venues.filter(amenities__contains=amenities)
+            venues = venues.filter(amenities__name__in=amenities)  # Adjust for ManyToMany
+
+        # Filter by price range
+        if min_price:
+            venues = venues.filter(price__gte=min_price)
+        if max_price:
+            venues = venues.filter(price__lte=max_price)
+
+        # Sorting
+        if sort_by == "price_low_to_high":
+            venues = venues.order_by("price")
+        elif sort_by == "price_high_to_low":
+            venues = venues.order_by("-price")
+        elif sort_by == "rating":
+            venues = venues.order_by("-rating")
+        elif sort_by == "name":
+            venues = venues.order_by("name")
 
         venue_data = [
             {
+                "id": venue.id,  # Added ID for request pricing functionality
                 "name": venue.name,
                 "photo": venue.photo.url if venue.photo else "/static/default.jpg",
                 "about": venue.about,
-                "amenities": venue.amenities
+                "amenities": list(venue.amenities.values_list('name', flat=True)),  # Convert ManyToMany to list
+                "price": venue.price,
+                "rating": venue.rating,
+                "location": venue.city
             }
             for venue in venues
         ]
@@ -114,6 +139,11 @@ def venue_list(request):
     return render(request, "Wedding/venue.html", {"venues": venues})
 
 
+def venue_detail(request, venue_id):
+    venue = get_object_or_404(Venue, id=venue_id)
+    return render(request, 'Wedding/venue_detail.html', {'venue': venue})
+
+
 @login_required(login_url='/login/')  # Booking requires login
 def book_venue(request, venue_id):
     venue = Venue.objects.get(id=venue_id)
@@ -121,6 +151,67 @@ def book_venue(request, venue_id):
 
 def venue_type(request, venue_type):
     return render(request, 'Wedding/venue_type.html', {'venue_type': venue_type})
+
+
+@csrf_exempt
+def request_pricing(request):
+    if request.method == "POST":
+        venue_id = request.POST.get("venue_id")
+        venue_name = request.POST.get("venue_name")
+        first_name = request.POST.get("first_name")
+        last_name = request.POST.get("last_name")
+        email = request.POST.get("email")
+        phone = request.POST.get("phone")
+        event_date = request.POST.get("event_date")
+        message = request.POST.get("message")
+
+        # Save request to database (optional)
+        PricingRequest.objects.create(
+            venue_id=venue_id,
+            venue_name=venue_name,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            phone=phone,
+            event_date=event_date,
+            message=message
+        )
+
+        # Send email to seller (optional)
+        send_mail(
+            f"New Pricing Request for {venue_name}",
+            f"Name: {first_name} {last_name}\nEmail: {email}\nPhone: {phone}\nEvent Date: {event_date}\nMessage: {message}",
+            "admin@yourwebsite.com",
+            ["seller@example.com"],
+        )
+
+        return JsonResponse({"message": "Your request has been sent successfully!"})
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+@csrf_exempt
+def send_request(request):
+    if request.method == "POST":
+        venue_id = request.POST.get("venue_id")
+        venue_name = request.POST.get("venue_name")
+        first_name = request.POST.get("first_name")
+        last_name = request.POST.get("last_name")
+        email = request.POST.get("email")
+        phone = request.POST.get("phone")
+        event_date = request.POST.get("event_date")
+        message = request.POST.get("message")
+
+        # Example: Send Email (modify as needed)
+        send_mail(
+            subject=f"New Pricing Request for {venue_name}",
+            message=f"User {first_name} {last_name} ({email}, {phone}) has requested pricing for {venue_name} on {event_date}.\n\nMessage:\n{message}",
+            from_email="noreply@yourdomain.com",
+            recipient_list=["seller@example.com"],  # Replace with seller's email
+        )
+
+        return JsonResponse({"success": True})
+    
+    return JsonResponse({"success": False})
 
 
 
@@ -226,6 +317,45 @@ def delete_venue(request, venue_id):
     venue = get_object_or_404(Venue, id=venue_id)
     venue.delete()  # Delete the venue from the database
     return redirect('manage_listings')
+
+
+@csrf_exempt
+def save_pricing(request):
+    if request.method == "POST":
+        data = request.POST
+        base_price = int(data.get("base_price", 0))
+        extra_guest_price = int(data.get("extra_guest_price", 0))
+        
+        amenities_price = {}
+        for key in request.POST.getlist("amenities"):
+            amenities_price[key] = int(request.POST.get(f"price_{key}", 0))
+
+        venue = Venue.objects.filter(seller=request.user).first()  # Seller ko venue select garne
+        if not venue:
+            return JsonResponse({"error": "No venue found!"}, status=400)
+
+        venue.base_price = base_price
+        venue.extra_guest_price = extra_guest_price
+        venue.amenities_price = amenities_price
+        venue.save()
+
+        return JsonResponse({"status": "success"})
+    
+
+def calculate_price(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        guest_count = int(data.get("guest_count", 0))
+        selected_amenities = data.get("amenities", [])
+
+        venue = Venue.objects.first()
+        total_price = venue.base_price + (guest_count * venue.extra_guest_price)
+
+        for amenity in selected_amenities:
+            if amenity in venue.amenities_price:
+                total_price += venue.amenities_price[amenity]
+
+        return JsonResponse({"total_price": total_price})
 
 
 def photography(request):
