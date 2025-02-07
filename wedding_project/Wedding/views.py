@@ -78,6 +78,41 @@ def venue(request):
     }
     return render(request, 'Wedding/venue.html', context)
 
+def venue_list(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':  # AJAX request
+        venue_type = request.GET.get('venue_type', '')
+        city = request.GET.get('city', '')
+        guest_numbers = request.GET.get('guest_number', '').split(',')
+        settings = request.GET.get('settings', '').split(',')
+        amenities = request.GET.get('amenities', '').split(',')
+
+        venues = Venue.objects.all()
+
+        if venue_type and venue_type != "all":
+            venues = venues.filter(type=venue_type)
+        if city:
+            venues = venues.filter(city__icontains=city)
+        if guest_numbers:
+            venues = venues.filter(guest_capacity__in=guest_numbers)
+        if settings:
+            venues = venues.filter(settings__in=settings)
+        if amenities:
+            venues = venues.filter(amenities__contains=amenities)
+
+        venue_data = [
+            {
+                "name": venue.name,
+                "photo": venue.photo.url if venue.photo else "/static/default.jpg",
+                "about": venue.about,
+                "amenities": venue.amenities
+            }
+            for venue in venues
+        ]
+        return JsonResponse({"venues": venue_data})
+
+    venues = Venue.objects.all()
+    return render(request, "Wedding/venue.html", {"venues": venues})
+
 
 @login_required(login_url='/login/')  # Booking requires login
 def book_venue(request, venue_id):
@@ -167,10 +202,30 @@ def edit_venue(request, venue_id):
     return render(request, 'Wedding/edit_venue.html', {'form': form, 'venue': venue})
 
 
+def filter_venues(request):
+    if request.method == "GET":
+        venue_type = request.GET.get('venue_type', None)
+        location = request.GET.get('location', None)
+        price_range = request.GET.get('price_range', None)
+
+        venues = Venue.objects.all()  # All venues
+
+        if venue_type:
+            venues = venues.filter(type=venue_type)
+        if location:
+            venues = venues.filter(location__icontains=location)
+        if price_range:
+            min_price, max_price = map(int, price_range.split('-'))
+            venues = venues.filter(price__gte=min_price, price__lte=max_price)
+
+        venue_data = list(venues.values('id', 'name', 'location', 'price'))  # Convert QuerySet to JSON format
+        return JsonResponse({'venues': venue_data})
+
+
 def delete_venue(request, venue_id):
     venue = get_object_or_404(Venue, id=venue_id)
     venue.delete()  # Delete the venue from the database
-    return redirect('Wedding/seller.html')
+    return redirect('manage_listings')
 
 
 def photography(request):

@@ -3,13 +3,14 @@
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
-from Wedding.views import photography, catering, decorations, contact, test_view, venue, add_venue, booking_requests
+from Wedding.views import photography, catering, decorations, contact, test_view, venue, venue_list, add_venue, booking_requests
 
 
 urlpatterns = [
     path('', views.index, name='index'),
     #path('services/', ServicesView.as_view(), name='services'),
     path('venues/', venue, name='venue'),
+    path("venues/", venue_list, name="venue_list"),
     path('book/venue/<int:venue_id>/', views.book_venue, name='book_venue'),
     path('<str:venue_type>/', views.venue_type, name='venue_type'),
     path('services/photography/', photography, name='photography'),
@@ -33,6 +34,7 @@ urlpatterns = [
     path('actor/seller/payment_management/', views.payment_management, name='payment_management'),  # Seller's payment and revenue page
     path('actor/seller/edit_venue/<int:venue_id>/', views.edit_venue, name='edit_venue'),
     path('actor/seller/delete-venue/<int:venue_id>/', views.delete_venue, name='delete_venue'),
+    path('venues/filter/', views.filter_venues, name='filter_venues'),
 
 
    
