@@ -91,3 +91,13 @@ def send_welcome_email(user_email):
     recipient_list = [user_email]
 
     send_mail(subject, message, from_email, recipient_list)
+
+
+def logout_view(request):
+    logout(request)  # Logs out the current user
+    return redirect('login')  # Redirects to login page after logout
+
+
+@login_required
+def profile_view(request):
+    return render(request, "Authentication/profile.html")
