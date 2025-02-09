@@ -3,9 +3,31 @@ from django import forms
 from .models import Venue, PricingRequest
 
 class VenueForm(forms.ModelForm):
+    status = forms.ChoiceField(
+        choices=[('Available', 'Available'), ('Unavailable', 'Unavailable')],
+        widget=forms.Select(attrs={"class": "form-control"})
+    )
+
     class Meta:
         model = Venue
-        fields = ['name', 'description', 'city', 'price', 'capacity', 'amenities', 'availability', 'image']
+        fields = [
+            'name', 'description', 'city', 'price', 'capacity', 
+            'amenities', 'availability', 'image', 'status',
+            'base_price', 'extra_guest_price', 'amenities_price'
+        ]
+        widgets = {
+            'name': forms.TextInput(attrs={"class": "form-control", "placeholder": "Venue Name"}),
+            'description': forms.Textarea(attrs={"class": "form-control", "rows": 3, "placeholder": "Venue Description"}),
+            'city': forms.TextInput(attrs={"class": "form-control", "placeholder": "City"}),
+            'price': forms.NumberInput(attrs={"class": "form-control", "placeholder": "Price"}),
+            'capacity': forms.NumberInput(attrs={"class": "form-control", "placeholder": "Capacity"}),
+            'amenities': forms.Textarea(attrs={"class": "form-control", "rows": 3, "placeholder": "Comma-separated amenities"}),
+            'availability': forms.DateInput(attrs={"type": "date", "class": "form-control"}),
+            'base_price': forms.NumberInput(attrs={"class": "form-control", "placeholder": "Base Price"}),
+            'extra_guest_price': forms.NumberInput(attrs={"class": "form-control", "placeholder": "Extra Guest Price"}),
+            'amenities_price': forms.Textarea(attrs={"class": "form-control", "rows": 3, "placeholder": "JSON format"}),
+            'image': forms.ClearableFileInput(attrs={"class": "form-control"}),
+        }
 
 
 class PricingRequestForm(forms.ModelForm):

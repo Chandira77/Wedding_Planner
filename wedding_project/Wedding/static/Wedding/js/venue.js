@@ -1,36 +1,37 @@
 document.addEventListener("DOMContentLoaded", function () {
     let filterButton = document.getElementById("apply_filter");
+    let resetButton = document.getElementById("reset_filter");
+    let venueResults = document.getElementById("venueResults");
+    let loadingIndicator = document.getElementById("loading");
 
-    if (filterButton) {
-        filterButton.addEventListener("click", function () {
-            let venueType = document.getElementById("venueType").value;
-            let city = document.getElementById("city").value;
-            let guestNumbers = [...document.querySelectorAll("input[name='guest_number']:checked")].map(cb => cb.value);
-            let settings = [...document.querySelectorAll("input[name='settings']:checked")].map(cb => cb.value);
-            let amenities = [...document.querySelectorAll("input[name='amenities']:checked")].map(cb => cb.value);
-            let minPrice = document.getElementById("minPrice").value;
-            let maxPrice = document.getElementById("maxPrice").value;
-            let sortBy = document.getElementById("sortBy").value;
+    function fetchVenues() {
+        let venueType = document.getElementById("venueType").value;
+        let city = document.getElementById("city").value;
+        let guestNumbers = [...document.querySelectorAll("input[name='guest_number']:checked")].map(cb => cb.value);
+        let settings = [...document.querySelectorAll("input[name='settings']:checked")].map(cb => cb.value);
+        let amenities = [...document.querySelectorAll("input[name='amenities']:checked")].map(cb => cb.value);
+        let minPrice = document.getElementById("minPrice").value;
+        let maxPrice = document.getElementById("maxPrice").value;
+        let sortBy = document.getElementById("sortBy").value;
 
-            let params = new URLSearchParams({
-                venue_type: venueType,
-                city: city,
-                guest_number: guestNumbers.join(','),
-                settings: settings.join(','),
-                amenities: amenities.join(','),
-                min_price: minPrice,
-                max_price: maxPrice,
-                sort_by: sortBy
-            });
+        let params = new URLSearchParams({
+            venue_type: venueType,
+            city: city,
+            guest_number: guestNumbers.join(','),
+            settings: settings.join(','),
+            amenities: amenities.join(','),
+            min_price: minPrice,
+            max_price: maxPrice,
+            sort_by: sortBy
+        });
 
-            fetch(venueUrl + `?${params.toString()}`, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            })
-            
+        loadingIndicator.style.display = "block"; // Show loading spinner
+
+        fetch(venueUrl + `?${params.toString()}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
             .then(response => response.json())
             .then(data => {
-                let venueResults = document.getElementById("venueResults");
                 venueResults.innerHTML = "";
+                loadingIndicator.style.display = "none"; // Hide loader
 
                 if (data.venues.length === 0) {
                     venueResults.innerHTML = "<p>No venues found matching your criteria.</p>";
@@ -57,9 +58,28 @@ document.addEventListener("DOMContentLoaded", function () {
                     `;
                 });
 
-                // Attach event listeners to dynamically loaded buttons
                 attachRequestPricingEventListeners();
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                loadingIndicator.style.display = "none";
+                venueResults.innerHTML = "<p>Something went wrong! Please try again.</p>";
             });
+    }
+
+    if (filterButton) {
+        filterButton.addEventListener("click", fetchVenues);
+    }
+
+    if (resetButton) {
+        resetButton.addEventListener("click", function () {
+            document.getElementById("venueType").value = "";
+            document.getElementById("city").value = "";
+            document.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = false);
+            document.getElementById("minPrice").value = "";
+            document.getElementById("maxPrice").value = "";
+            document.getElementById("sortBy").value = "";
+            fetchVenues();
         });
     }
 
@@ -72,43 +92,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById("venueId").value = venueId;
                 document.getElementById("venueName").value = venueName;
 
-                // Open modal
                 let modal = new bootstrap.Modal(document.getElementById("requestPricingModal"));
                 modal.show();
             });
         });
     }
 
-    // Attach event listeners on initial load
-    attachRequestPricingEventListeners();
-
-    // Handle Form Submission for Request Pricing
-    let pricingForm = document.getElementById("requestPricingForm");
-
-    if (pricingForm) {
-        pricingForm.addEventListener("submit", function (e) {
-            e.preventDefault();
-
-            let formData = new FormData(this);
-
-            fetch("{% url 'send_request' %}", {  // Ensure 'send_request' is correctly mapped in Django URLs
-                method: "POST",
-                body: formData,
-                headers: {
-                    "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert("Request sent successfully!");
-                    let modal = bootstrap.Modal.getInstance(document.getElementById("requestPricingModal"));
-                    modal.hide();
-                } else {
-                    alert("Failed to send request. Please try again.");
-                }
-            })
-            .catch(error => console.error("Error:", error));
-        });
-    }
+    fetchVenues(); // Load venues on page load
 });

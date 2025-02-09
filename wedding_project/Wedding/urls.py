@@ -3,13 +3,13 @@
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
-from Wedding.views import photography, catering, decorations, contact, test_view, venue, venue_detail, save_pricing, calculate_price, request_pricing, send_request, add_venue, booking_requests
+from Wedding.views import photography, catering, decorations, contact, test_view, venue_view, venue_detail, save_pricing, calculate_price, request_pricing, send_request, add_venue, booking_requests
 
 
 urlpatterns = [
     path('', views.index, name='index'),
     #path('services/', ServicesView.as_view(), name='services'),
-    path('venues/', venue, name='venue'),
+    path('venues/', venue_view, name='venue'),
     #path('venues/', venue_list, name='venues_list'),
     path('venues/<int:venue_id>/', venue_detail, name='venue_detail'),
     path('book/venue/<int:venue_id>/', views.book_venue, name='book_venue'),

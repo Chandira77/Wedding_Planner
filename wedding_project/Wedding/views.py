@@ -25,11 +25,13 @@ def test_view(request):
     form = ExampleForm()
     return render(request, 'Wedding/test.html', {'form': form})
 
-def venue(request):
+
+
+def venue_view(request):
     form = VenueForm(request.GET or None)
     venues = Venue.objects.all()
 
-    # Filtering Logic
+    # 🔹 **Filtering Logic**
     if form.is_valid():
         venue_type = form.cleaned_data.get('venue_type')
         city = form.cleaned_data.get('city')
@@ -43,8 +45,7 @@ def venue(request):
         if city:
             venues = venues.filter(Q(city__icontains=city))
             if include_nearby:
-                # Implement nearby search logic here
-                pass
+                pass  # TODO: Implement nearby search logic
 
         if guest_number:
             if '-' in guest_number:
@@ -57,86 +58,64 @@ def venue(request):
         if available_date:
             venues = venues.filter(available_dates__date=available_date)
 
-    # Sorting (By Price, Rating, etc.)
-    sort_by = request.GET.get('sort_by')
+    # 📌 **Extra Filters from AJAX Request**
+    settings = request.GET.getlist('settings')
+    amenities = request.GET.getlist('amenities')
+    min_price = request.GET.get('min_price', '')
+    max_price = request.GET.get('max_price', '')
+    sort_by = request.GET.get('sort_by', '')
+
+    # 🔹 **Apply Additional Filters**
+    if settings:
+        venues = venues.filter(settings__in=settings)
+
+    if amenities:
+        venues = venues.filter(amenities__name__in=amenities)  # ManyToManyField filter
+
+    if min_price:
+        venues = venues.filter(price__gte=min_price)
+
+    if max_price:
+        venues = venues.filter(price__lte=max_price)
+
+    # 🔹 **Sorting**
     if sort_by == 'price_low_to_high':
         venues = venues.order_by('price')
     elif sort_by == 'price_high_to_low':
         venues = venues.order_by('-price')
     elif sort_by == 'rating':
         venues = venues.order_by('-rating')
+    elif sort_by == 'name':
+        venues = venues.order_by('name')
 
-    # Pagination
+    # 🔹 **Pagination**
     paginator = Paginator(venues, 6)  # Show 6 venues per page
     page_number = request.GET.get('page')
     venues_page = paginator.get_page(page_number)
 
-    if not venues.exists():
-        messages.info(request, "No venues found matching your filters.")
+    # 🔹 **AJAX Response for Dynamic Filtering**
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        venue_data = [
+            {
+                "id": venue.id,
+                "name": venue.name,
+                "photo": venue.photo.url if venue.photo else "/static/default.jpg",
+                "about": venue.about,
+                "amenities": list(venue.amenities.values_list('name', flat=True)),
+                "price": venue.price,
+                "rating": venue.rating,
+                "location": venue.city
+            }
+            for venue in venues_page
+        ]
+        return JsonResponse({"venues": venue_data})
 
+    # 🔹 **Render HTML Template**
     context = {
         'form': form,
         'venues': venues_page,
     }
     return render(request, 'Wedding/venue.html', context)
-
-def venue_list(request):
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':  # AJAX request
-        venue_type = request.GET.get('venue_type', '')
-        city = request.GET.get('city', '')
-        guest_numbers = request.GET.getlist('guest_number')  # Use getlist for multiple selections
-        settings = request.GET.getlist('settings')
-        amenities = request.GET.getlist('amenities')
-        min_price = request.GET.get('min_price', '')
-        max_price = request.GET.get('max_price', '')
-        sort_by = request.GET.get('sort_by', '')
-
-        venues = Venue.objects.all()
-
-        if venue_type and venue_type != "all":
-            venues = venues.filter(type=venue_type)
-        if city:
-            venues = venues.filter(city__icontains=city)
-        if guest_numbers:
-            venues = venues.filter(guest_capacity__in=guest_numbers)
-        if settings:
-            venues = venues.filter(settings__in=settings)
-        if amenities:
-            venues = venues.filter(amenities__name__in=amenities)  # Adjust for ManyToMany
-
-        # Filter by price range
-        if min_price:
-            venues = venues.filter(price__gte=min_price)
-        if max_price:
-            venues = venues.filter(price__lte=max_price)
-
-        # Sorting
-        if sort_by == "price_low_to_high":
-            venues = venues.order_by("price")
-        elif sort_by == "price_high_to_low":
-            venues = venues.order_by("-price")
-        elif sort_by == "rating":
-            venues = venues.order_by("-rating")
-        elif sort_by == "name":
-            venues = venues.order_by("name")
-
-        venue_data = [
-            {
-                "id": venue.id,  # Added ID for request pricing functionality
-                "name": venue.name,
-                "photo": venue.photo.url if venue.photo else "/static/default.jpg",
-                "about": venue.about,
-                "amenities": list(venue.amenities.values_list('name', flat=True)),  # Convert ManyToMany to list
-                "price": venue.price,
-                "rating": venue.rating,
-                "location": venue.city
-            }
-            for venue in venues
-        ]
-        return JsonResponse({"venues": venue_data})
-
-    venues = Venue.objects.all()
-    return render(request, "Wedding/venue.html", {"venues": venues})
 
 
 def venue_detail(request, venue_id):
