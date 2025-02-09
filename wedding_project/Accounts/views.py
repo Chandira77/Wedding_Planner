@@ -42,37 +42,44 @@ def login_view(request):
 
 def register_view(request):
     if request.method == "POST":
-        username = request.POST["username"]
-        email = request.POST["email"]
-        password = request.POST["password"]
-        confirm_password = request.POST["confirm_password"]
-        role = request.POST["role"]  # Get role from form
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm_password")
+        role = request.POST.get("role")  # Get role from form
 
-        # Check if username already exists
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already taken. Choose another.")
-            return redirect("Authentication/register.html")
+        # Validate input
+        if not username or not email or not password or not confirm_password:
+            messages.error(request, "All fields are required.")
+            return redirect("register")
 
-        # Check if email already exists
-        if User.objects.filter(email=email).exists():
-            messages.error(request, "Email already in use. Use another email.")
-            return redirect("Authentication/register.html")
-
-        # Check password confirmation
         if password != confirm_password:
             messages.error(request, "Passwords do not match.")
-            return redirect("Authentication/register.html")
+            return redirect("register")
 
-        # Create user
-        user = User.objects.create_user(username=username, email=email, password=password)
-        user.save()
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already taken. Choose another.")
+            return redirect("register")
 
-        # Assign role to profile
-        profile = Profile.objects.create(user=user, role=role)
-        profile.save()
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Email already in use. Use another email.")
+            return redirect("register")
 
-        messages.success(request, "Registration successful! You can now log in.")
-        return redirect("login")
+        # Ensure role is valid
+        valid_roles = ["user", "seller", "admin", "guest"]
+        if role not in valid_roles:
+            messages.error(request, "Invalid role selected.")
+            return redirect("register")
+
+        # Create user and profile
+        try:
+            user = User.objects.create_user(username=username, email=email, password=password)
+            Profile.objects.create(user=user, role=role)
+            messages.success(request, "Registration successful! You can now log in.")
+            return redirect("login")
+        except Exception as e:
+            messages.error(request, f"An error occurred: {e}")
+            return redirect("register")
 
     return render(request, "Authentication/register.html")
 
