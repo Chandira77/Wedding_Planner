@@ -11,9 +11,10 @@
 
 <div class="container">
     <div class="row">
-        <!-- Left Column: Filters -->
-        <div class="col-md-4">
-            <h3>Filter Venues</h3>
+        <form id="apply_filter" method="GET" action="{% url 'venue' %}"></form>
+            <!-- Left Column: Filters -->
+            <div class="col-md-4">
+                <h3>Filter Venues</h3>
             
 
                 <!-- Venue Type -->
@@ -61,17 +62,17 @@
 
 
                 <label for="sort_by">Sort by:</label>
-                    <select id="sort_by" class="form-control" onchange="applySort()">
-                        <option value="">Default</option>
-                        <option value="price_low_to_high">Price: Low to High</option>
-                        <option value="price_high_to_low">Price: High to Low</option>
-                        <option value="rating">Highest Rated</option>
-                    </select>
+                <select id="sort_by" class="form-control" onchange="applySort()">
+                    <option value="">Default</option>
+                    <option value="price_low_to_high">Price: Low to High</option>
+                    <option value="price_high_to_low">Price: High to Low</option>
+                    <option value="rating">Highest Rated</option>
+                </select>
                 <!-- Apply Filters -->
                 <button type="submit" class="btn btn-primary">Apply Filter</button>
-            </form>
+            </div>
 
-        </div>
+        </form>
 
 
         

@@ -194,18 +194,8 @@ def send_request(request):
 
 
 
-@login_required(login_url='/login/')
 def seller_page(request):
-    venues = Venue.objects.filter(seller=request.user)
-    bookings = Booking.objects.filter(venue__seller=request.user)
-    earnings = SellerEarnings.objects.get_or_create(seller=request.user)[0]
-    
-    context = {
-        'venues': venues,
-        'bookings': bookings,
-        'earnings': earnings,
-    }
-    return render(request, 'Wedding/seller.html', context)
+    return render(request, 'Wedding/seller_page.html')
 
 
 
@@ -273,24 +263,23 @@ def edit_venue(request, venue_id):
 
 
 def filter_venues(request):
-    if request.method == "GET":
-        venue_type = request.GET.get('venue_type', None)
-        location = request.GET.get('location', None)
-        price_range = request.GET.get('price_range', None)
+    venue_type = request.GET.get('venue_type', '')
+    city = request.GET.get('city', '')
+    min_price = request.GET.get('min_price', '')
+    max_price = request.GET.get('max_price', '')
 
-        venues = Venue.objects.all()  # All venues
+    venues = Venue.objects.all()
 
-        if venue_type:
-            venues = venues.filter(type=venue_type)
-        if location:
-            venues = venues.filter(location__icontains=location)
-        if price_range:
-            min_price, max_price = map(int, price_range.split('-'))
-            venues = venues.filter(price__gte=min_price, price__lte=max_price)
+    if venue_type:
+        venues = venues.filter(type=venue_type)
+    if city:
+        venues = venues.filter(city__icontains=city)
+    if min_price and max_price:
+        venues = venues.filter(price__gte=min_price, price__lte=max_price)
 
-        venue_data = list(venues.values('id', 'name', 'location', 'price'))  # Convert QuerySet to JSON format
-        return JsonResponse({'venues': venue_data})
+    venue_list = list(venues.values("id", "name", "location", "price", "photo"))
 
+    return JsonResponse({"venues": venue_view})
 
 def delete_venue(request, venue_id):
     venue = get_object_or_404(Venue, id=venue_id)

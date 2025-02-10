@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Page</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'Wedding/css/seller_page.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'Partials/css/footer.css' %}">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <ul>
+            <li><a href="{% url 'seller_page' %}">Home</a></li>
+            <li>
+                <a href="#">Services</a>
+                <ul>
+                    <li><a href="{% url 'venue' %}">Venue</a></li>
+                    <li><a href="{% url 'catering' %}">Catering</a></li>
+                    <li><a href="{% url 'decorations' %}">Decoration</a></li>
+                    <li><a href="{% url 'photography' %}">Photography</a></li>
+                </ul>
+            </li>
+
+            {% if user.is_authenticated and user.is_seller %}
+                <li><a href="{% url 'seller_dashboard' %}">Dashboard</a></li>
+                <li><a href="{% url 'manage_listings' %}">Manage Listings</a></li>
+                <li><a href="{% url 'booking_requests' %}">Booking Requests</a></li>
+                <li><a href="{% url 'earnings' %}">Earnings</a></li>
+                <li><a href="{% url 'profile' %}">My Profile</a></li>
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+            {% else %}
+                <li><a href="{% url 'profile' %}">My Profile</a></li>
+                <li><a href="{% url 'login' %}">Login</a></li>
+                <li><a href="{% url 'register' %}">Register</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <!-- Hero Section (Before Login) -->
+    {% if not user.is_authenticated %}
+    <section class="hero">
+        <div class="hero-content">
+            <img src="{% static 'Wedding/images/seller_page.jpg' %}" alt="Seller images">
+            <div class="hero-buttons">
+                <a href="{% url 'login' %}" class="btn">Login</a>
+                <a href="{% url 'register' %}" class="btn">Register</a>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- About Seller Section -->
+    <section class="about-seller">
+        <h2>About Our Seller Platform</h2>
+        <p>Join us as a seller and showcase your wedding services like venue, catering, decoration, and photography.</p>
+    </section>
+
+    <!-- Content Block -->
+    <div class="content">
+        {% block seller_content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    {% include 'Partials/footer.html' %}
+
+</body>
+</html>

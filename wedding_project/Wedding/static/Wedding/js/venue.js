@@ -1,18 +1,26 @@
+const venueUrl = "/api/venues"; // Define the venueUrl before using it
+
 document.addEventListener("DOMContentLoaded", function () {
     let filterButton = document.getElementById("apply_filter");
     let resetButton = document.getElementById("reset_filter");
     let venueResults = document.getElementById("venueResults");
-    let loadingIndicator = document.getElementById("loading");
+    let loading = document.getElementById("loading");
+
+    // Step 1: Debugging - Check if elements exist
+    if (!filterButton) console.error("❌ ERROR: filterButton (apply_filter) not found!");
+    if (!resetButton) console.error("❌ ERROR: resetButton (reset_filter) not found!");
+    if (!venueResults) console.error("❌ ERROR: venueResults not found!");
+    if (!loading) console.error("❌ ERROR: loading not found!");
 
     function fetchVenues() {
-        let venueType = document.getElementById("venueType").value;
-        let city = document.getElementById("city").value;
+        let venueType = document.getElementById("venueType")?.value || "";
+        let city = document.getElementById("city")?.value || "";
         let guestNumbers = [...document.querySelectorAll("input[name='guest_number']:checked")].map(cb => cb.value);
         let settings = [...document.querySelectorAll("input[name='settings']:checked")].map(cb => cb.value);
         let amenities = [...document.querySelectorAll("input[name='amenities']:checked")].map(cb => cb.value);
-        let minPrice = document.getElementById("minPrice").value;
-        let maxPrice = document.getElementById("maxPrice").value;
-        let sortBy = document.getElementById("sortBy").value;
+        let minPrice = document.getElementById("minPrice")?.value || "";
+        let maxPrice = document.getElementById("maxPrice")?.value || "";
+        let sortBy = document.getElementById("sortBy")?.value || "";
 
         let params = new URLSearchParams({
             venue_type: venueType,
@@ -25,15 +33,19 @@ document.addEventListener("DOMContentLoaded", function () {
             sort_by: sortBy
         });
 
-        loadingIndicator.style.display = "block"; // Show loading spinner
+        console.log("🚀 Fetching venues with URL:", venueUrl + `?${params.toString()}`); // Step 3 Debugging
+
+        loading.style.display = "block"; // Show loading spinner
 
         fetch(venueUrl + `?${params.toString()}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
             .then(response => response.json())
             .then(data => {
+                console.log("📡 Response received:", data); // Step 3 Debugging
                 venueResults.innerHTML = "";
-                loadingIndicator.style.display = "none"; // Hide loader
+                loading.style.display = "none"; // Hide loader
 
-                if (data.venues.length === 0) {
+                if (!data.venues || data.venues.length === 0) {
+                    console.warn("⚠️ No venues found matching criteria.");
                     venueResults.innerHTML = "<p>No venues found matching your criteria.</p>";
                     return;
                 }
@@ -61,8 +73,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 attachRequestPricingEventListeners();
             })
             .catch(error => {
-                console.error("Error:", error);
-                loadingIndicator.style.display = "none";
+                console.error("❌ Fetch error:", error); // Step 4 Debugging
+                loading.style.display = "none";
                 venueResults.innerHTML = "<p>Something went wrong! Please try again.</p>";
             });
     }
