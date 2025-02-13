@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Accounts',
     'Wedding',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -64,6 +65,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'Accounts.utils.context_processors.user_role',
             ],
         },
     },
@@ -140,6 +142,10 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = '07yamini2055@gmail.com'  # Use a valid email that you own
 EMAIL_HOST_PASSWORD = 'dwuf evtd tmrh dxln'  # Use the App Password (not your actual Gmail password)
 DEFAULT_FROM_EMAIL = 'inachand920@gmail.com' 
+
+
+LOGIN_REDIRECT_URL = '/seller/seller_dashboard/' 
+LOGIN_REDIRECT_URL = '/login_success/'
 
 
 MEDIA_URL = '/media/'

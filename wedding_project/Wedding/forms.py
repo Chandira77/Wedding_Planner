@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Venue, PricingRequest
+from .models import Venue, PricingRequest, SellerProfile
 
 class VenueForm(forms.ModelForm):
     status = forms.ChoiceField(
@@ -27,6 +27,20 @@ class VenueForm(forms.ModelForm):
             'extra_guest_price': forms.NumberInput(attrs={"class": "form-control", "placeholder": "Extra Guest Price"}),
             'amenities_price': forms.Textarea(attrs={"class": "form-control", "rows": 3, "placeholder": "JSON format"}),
             'image': forms.ClearableFileInput(attrs={"class": "form-control"}),
+        }
+
+
+
+
+
+class SellerProfileForm(forms.ModelForm):
+    class Meta:
+        model = SellerProfile
+        fields = ['business_name', 'phone', 'profile_image']
+        widgets = {
+            'business_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter business name'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter phone number'}),
+            'profile_image': forms.FileInput(attrs={'class': 'form-control'}),
         }
 
 

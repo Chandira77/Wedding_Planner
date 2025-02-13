@@ -49,7 +49,7 @@
                         <li><a class="dropdown-item" href="{% url 'user_page' %}">User</a></li>
                         <li><a class="dropdown-item" href="{% url 'admin_page' %}">Admin</a></li>
                         <li><a class="dropdown-item" href="{% url 'guest_page' %}">Guest</a></li>
-                        <li><a class="dropdown-item" href="{% url 'seller_page' %}">Seller</a></li>
+                        <li><a class="dropdown-item" href="{% url 'sellerdashboard' %}">Seller</a></li>
                     </ul>
                 </li>
                 
@@ -60,25 +60,76 @@
                 
                 <!-- Authentication Links -->
                 {% if user.is_authenticated %}
-                <!-- Profile Dropdown -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" 
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        {{ user.username }}
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="profileDropdown">
-                        <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
-                        <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
-                    </ul>
-                </li>
+                    {% if user_role == "seller" %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" 
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="profileDropdown">
+                                <li><a class="dropdown-item" href="{% url 'sellerdashboard' %}">Seller Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{% url 'manage_listings' %}">Manage Listings</a></li>
+                                <li><a class="dropdown-item" href="{% url 'booking_requests' %}">Booking Requests</a></li>
+                                <li><a class="dropdown-item" href="{% url 'earnings' %}">Earnings</a></li>
+                                <li><a class="dropdown-item" href="{% url 'profile' %}">My Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% elif user_role == "admin" %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" 
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="profileDropdown">
+                                <li><a class="dropdown-item" href="{% url 'admin_dashboard' %}">Admin Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% elif user_role == "user" %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" 
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="profileDropdown">
+                                <li><a class="dropdown-item" href="{% url 'user_dashboard' %}">User Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{% url 'my_bookings' %}">My Bookings</a></li>
+                                <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% elif user_role == "guest" %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" 
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="profileDropdown">
+                                <li><a class="dropdown-item" href="{% url 'guest_dashboard' %}">Guest Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{% url 'view_events' %}">View Events</a></li>
+                                <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                        </li>
+                    {% endif %}
                 {% else %}
                     <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}" href="{% url 'login' %}">Login</a>
+                        <a class="nav-link" href="{% url 'login' %}">Login</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'register' %}active{% endif %}" href="{% url 'register' %}">Register</a>
+                        <a class="nav-link" href="{% url 'register' %}">Register</a>
                     </li>
                 {% endif %}
+
                 
             </ul>
         </div>

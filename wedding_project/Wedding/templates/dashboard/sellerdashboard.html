@@ -1,0 +1,151 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h2>Seller Dashboard</h2>
+
+    <!-- Seller Profile Section -->
+    <div class="profile-section">
+        <h3>Welcome, {{ seller.business_name }}</h3>
+        <img src="{{ seller.profile_image.url }}" alt="Profile Image" width="100">
+        <p><strong>Phone:</strong> {{ seller.phone }}</p>
+        <a href="{% url 'edit_seller_profile' %}" class="btn">Edit Profile</a>
+    </div>
+
+    <hr>
+
+    <!-- Dashboard Statistics Section -->
+    <div class="dashboard-stats">
+        <div class="stat-card">
+            <h3>Total Earnings</h3>
+            <p>${{ total_earnings }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Listings</h3>
+            <p>{{ total_listings }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Pending Bookings</h3>
+            <p>{{ pending_bookings }}</p>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Venue Management Section -->
+    <div class="venue-section">
+        <h3>Your Listed Venues</h3>
+        <a href="{% url 'add_venue' %}" class="btn btn-primary">Add New Venue</a>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>City</th>
+                    <th>Price</th>
+                    <th>Capacity</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for venue in venues %}
+                <tr>
+                    <td><img src="{{ venue.image.url }}" alt="{{ venue.name }}" width="80"></td>
+                    <td>{{ venue.name }}</td>
+                    <td>{{ venue.get_category_display }}</td>
+                    <td>{{ venue.city }}</td>
+                    <td>${{ venue.price }}</td>
+                    <td>{{ venue.capacity }}</td>
+                    <td>{{ venue.status }}</td>
+                    <td>
+                        <a href="{% url 'edit_venue' venue.id %}" class="btn btn-warning">Edit</a>
+                        <a href="{% url 'delete_venue' venue.id %}" class="btn btn-danger">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8">No venues added yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <hr>
+
+    <!-- Booking Requests -->
+    <div class="booking-requests">
+        <h3>Booking Requests</h3>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Service</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td>{{ booking.customer.username }}</td>
+                    <td>{{ booking.service }}</td>
+                    <td>{{ booking.date }}</td>
+                    <td>{{ booking.status }}</td>
+                    <td>
+                        <a href="{% url 'accept_booking' booking.id %}" class="btn btn-success">Accept</a>
+                        <a href="{% url 'reject_booking' booking.id %}" class="btn btn-danger">Reject</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">No booking requests yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <hr>
+
+    <!-- Earnings Report -->
+    <div class="earnings-report">
+        <h3>Earnings Report</h3>
+        <p>Total Revenue: ${{ total_earnings }}</p>
+        <a href="{% url 'withdraw_funds' %}" class="btn btn-primary">Withdraw Funds</a>
+    </div>
+
+    <hr>
+
+    <!-- Add New Listing -->
+    <div class="add-listing">
+        <h3>Add New Listing</h3>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="service_type">Service Type:</label>
+            <select name="service_type">
+                <option value="Venue">Venue</option>
+                <option value="Catering">Catering</option>
+                <option value="Decoration">Decoration</option>
+                <option value="Photography">Photography</option>
+                <option value="Videography">Videography</option>
+            </select>
+
+            <label for="price">Price:</label>
+            <input type="number" name="price" required>
+
+            <label for="availability">Availability:</label>
+            <input type="date" name="availability" required>
+
+            <label for="images">Upload Images:</label>
+            <input type="file" name="images" multiple>
+
+            <input type="submit" value="Add Listing">
+        </form>
+    </div>
+</div>
+{% endblock %}

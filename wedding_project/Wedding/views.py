@@ -1,15 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from .forms import VenueForm
+from .forms import VenueForm, SellerProfileForm
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django import forms
-from .models import Venue,  Booking, Review, SellerEarnings, PricingRequest
+from .models import Venue, SellerProfile, Booking, Review, SellerEarnings, PricingRequest
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -194,10 +194,146 @@ def send_request(request):
 
 
 
-def seller_page(request):
-    return render(request, 'Wedding/seller_page.html')
 
 
+@login_required
+def sellerdashboard(request):
+    user = request.user 
+
+    seller_profile = get_object_or_404(SellerProfile, user=user)
+    
+    print("Seller Profile:", seller_profile)
+
+    venues = Venue.objects.filter(seller=request.user)
+
+
+    # Fetch dashboard statistics
+    total_listings = venues.count()
+    total_earnings = SellerEarnings.objects.filter(seller=seller_profile).aggregate(Sum('amount'))['amount__sum'] or 0
+
+    # Get bookings for seller's venues
+    bookings = Booking.objects.filter(venue__in=venues, status='Pending')
+
+    pending_bookings = bookings.count()  # Count of pending bookings
+
+    context = {
+        'seller': seller_profile,
+        'total_listings': total_listings,
+        'pending_bookings': pending_bookings,
+        'total_earnings': total_earnings,
+        'venues': venues,
+        'bookings': bookings,
+    }
+
+    return render(request, 'dashboard/sellerdashboard.html', context)
+
+@login_required
+def login_success(request):
+    if request.user.groups.filter(name="Seller").exists():
+        return redirect('sellerdashboard')  
+    elif request.user.groups.filter(name="Admin").exists():
+        return redirect('admin_dashboard')  
+    elif request.user.groups.filter(name="Guest").exists(): 
+        return redirect('guest_dashboard')
+    elif request.user.groups.filter(name="User").exists():
+        return redirect('user_dashboard')
+    else:
+        return redirect('home')
+    
+
+@login_required
+def edit_seller_profile(request):
+     seller = SellerProfile.objects.filter(user=request.user).first()
+     if not seller:
+        seller = SellerProfile.objects.create(user=request.user)
+     if request.method == 'POST':
+        form = SellerProfileForm(request.POST, request.FILES, instance=seller)
+        if form.is_valid():
+            form.save()
+            return redirect('sellerdashboard') 
+     else:
+        form = SellerProfileForm(instance=seller)
+
+     return render(request, 'dashboard/edit_seller_profile.html', {'form': form})
+
+
+@login_required
+def add_listing(request):
+    if request.method == "POST":
+        form = VenueForm(request.POST, request.FILES)
+        if form.is_valid():
+            listing = form.save(commit=False)
+            listing.seller = request.user.SellerProfile
+            listing.save()
+            messages.success(request, "Listing added successfully!")
+            return redirect('sellerdashboard')
+    else:
+        form = VenueForm()
+    
+    return render(request, 'add_listing.html', {'form': form})
+
+
+@login_required
+def edit_listing(request, listing_id):
+    listing = get_object_or_404(Venue, id=listing_id, seller=request.user.seller)
+    if request.method == "POST":
+        form = VenueForm(request.POST, request.FILES, instance=listing)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Listing updated successfully!")
+            return redirect('sellerdashboard')
+    else:
+        form = VenueForm(instance=listing)
+
+    return render(request, 'edit_listing.html', {'form': form})
+
+@login_required
+def delete_listing(request, listing_id):
+    listing = get_object_or_404(Venue, id=listing_id, seller=request.user.seller)
+    listing.delete()
+    messages.success(request, "Listing deleted successfully!")
+    return redirect('sellerdashboard')
+
+
+@login_required
+def accept_booking(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, seller=request.user.seller)
+    booking.status = 'Accepted'
+    booking.save()
+    messages.success(request, "Booking accepted!")
+    return redirect('sellerdashboard')
+
+
+@login_required
+def reject_booking(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, seller=request.user.seller)
+    booking.status = 'Rejected'
+    booking.save()
+    messages.success(request, "Booking rejected!")
+    return redirect('sellerdashboard')
+
+
+@login_required
+def withdraw_funds(request):
+    seller = get_object_or_404(SellerProfile, user=request.user)
+    earnings = SellerEarnings.objects.filter(seller=seller)
+    total_earnings = earnings.aggregate(total=Sum('amount'))['total'] or 0
+
+
+    if total_earnings > 0:
+        earnings.delete()
+        messages.success(request, "Funds withdrawn successfully!")
+    else:
+        messages.error(request, "No earnings available for withdrawal.")
+
+    return redirect('sellerdashboard')
+
+
+
+@login_required(login_url='/login/')
+def earnings(request):
+    earnings = SellerEarnings.objects.get_or_create(seller=request.user)[0]
+    return render(request, 'Wedding/earnings.html', {'earnings': earnings})
 
 @login_required(login_url='/login/')
 def add_venue(request):
@@ -241,14 +377,9 @@ def seller_reviews(request):
     return render(request, 'Wedding/seller_reviews.html', {'reviews': reviews})
 
 
-@login_required(login_url='/login/')
-def earnings(request):
-    earnings = SellerEarnings.objects.get_or_create(seller=request.user)[0]
-    return render(request, 'Wedding/earnings.html', {'earnings': earnings})
 
-def payment_management(request):
-    # Logic for managing payments and revenue
-    return render(request, 'Wedding/payment_management.html')
+
+
 
 def edit_venue(request, venue_id):
     venue = get_object_or_404(Venue, id=venue_id)

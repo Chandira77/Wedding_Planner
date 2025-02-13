@@ -29,7 +29,7 @@ def login_view(request):
             if profile.role == 'user':
                 return redirect('user_page')
             elif profile.role == 'seller':
-                return redirect('seller_page')
+                return redirect('sellerdashboard')
             elif profile.role == 'admin':
                 return redirect('admin_page')
             elif profile.role == 'guest':

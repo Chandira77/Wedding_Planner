@@ -1,0 +1,31 @@
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <label for="name">Venue Name:</label>
+    <input type="text" name="name" required>
+
+    <label for="venue_type">Venue Type:</label>
+    <select name="venue_type">
+        <option value="hotel">Hotel</option>
+        <option value="banquet">Banquet</option>
+        <option value="temple">Temple</option>
+        <option value="church">Church</option>
+    </select>
+
+    <label for="city">City:</label>
+    <input type="text" name="city" required>
+
+    <label for="guest_capacity">Guest Capacity:</label>
+    <input type="number" name="guest_capacity" required>
+
+    <label for="amenities">Amenities (comma-separated):</label>
+    <input type="text" name="amenities">
+
+    <label for="price">Price:</label>
+    <input type="number" step="0.01" name="price" required>
+
+    <label for="image">Upload Image:</label>
+    <input type="file" name="image">
+
+    <button type="submit">Add Venue</button>
+</form>
