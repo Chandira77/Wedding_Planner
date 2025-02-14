@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'Wedding/css/sellerdashboard.css' %}">
 <div class="container">
     <h2>Seller Dashboard</h2>
 
@@ -116,7 +117,18 @@
     <div class="earnings-report">
         <h3>Earnings Report</h3>
         <p>Total Revenue: ${{ total_earnings }}</p>
-        <a href="{% url 'withdraw_funds' %}" class="btn btn-primary">Withdraw Funds</a>
+        {% if venues %}
+            {% for venue in venues %}
+                {% if venue.id %}
+                    <a href="{% url 'withdraw_funds' venue.id %}">Withdraw Funds</a>
+                {% else %}
+                    <span>Withdrawal unavailable</span>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <span>No venues available for withdrawal.</span>
+        {% endif %}
+
     </div>
 
     <hr>

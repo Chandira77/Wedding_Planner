@@ -11,6 +11,7 @@ from django.db.models import Q, Sum
 from django import forms
 from .models import Venue, SellerProfile, Booking, Review, SellerEarnings, PricingRequest
 import json
+from django.urls import reverse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -204,12 +205,16 @@ def sellerdashboard(request):
     
     print("Seller Profile:", seller_profile)
 
-    venues = Venue.objects.filter(seller=request.user)
+    venues = Venue.objects.filter(seller=user)
+
+    for venue in venues:
+        venue.withdraw_url = reverse('withdraw_funds', args=[venue.id])
 
 
     # Fetch dashboard statistics
     total_listings = venues.count()
-    total_earnings = SellerEarnings.objects.filter(seller=seller_profile).aggregate(Sum('amount'))['amount__sum'] or 0
+    total_earnings = SellerEarnings.objects.filter(seller=user).aggregate(Sum('total_earnings'))['total_earnings__sum'] or 0
+
 
     # Get bookings for seller's venues
     bookings = Booking.objects.filter(venue__in=venues, status='Pending')
