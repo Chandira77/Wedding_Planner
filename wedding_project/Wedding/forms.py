@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Venue, PricingRequest, SellerProfile
+from .models import Venue, ServiceListing, PricingRequest, SellerProfile
 
 class VenueForm(forms.ModelForm):
     status = forms.ChoiceField(
@@ -30,7 +30,13 @@ class VenueForm(forms.ModelForm):
         }
 
 
-
+class ServiceListingForm(forms.ModelForm):
+    class Meta:
+        model = ServiceListing
+        fields = ['service_type', 'price', 'availability', 'amenities', 'category', 'city', 'status', 'images']
+        widgets = {
+            'availability': forms.DateInput(attrs={'type': 'date'}),
+        }
 
 
 class SellerProfileForm(forms.ModelForm):

@@ -175,55 +175,73 @@ h2, h3 {
 }
 
 /* Add Listing Form */
-.add-listing {
+/* Listing Management Table */
+.listing-section {
     margin-top: 20px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 8px;
 }
 
-.add-listing label {
-    display: block;
-    margin: 8px 0 5px;
-    font-weight: bold;
-}
-
-.add-listing select, 
-.add-listing input[type="number"],
-.add-listing input[type="date"],
-.add-listing input[type="file"],
-.add-listing input[type="submit"] {
+.listing-section table {
     width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 10px;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background: #fff;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.add-listing input[type="submit"] {
+.listing-section th, .listing-section td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.listing-section th {
     background: #007bff;
     color: white;
-    cursor: pointer;
 }
 
-.add-listing input[type="submit"]:hover {
-    background: #0056b3;
+.listing-section td img {
+    border-radius: 5px;
+    max-width: 80px;
+    height: auto;
 }
 
-/* Responsive Design */
+/* Buttons */
+.btn {
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: #007bff;
+    color: white;
+}
+
+.btn-warning {
+    background: #ffc107;
+    color: black;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-success {
+    background: #28a745;
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.8;
+}
+
+/* Responsive Table */
 @media (max-width: 768px) {
-    .dashboard-stats {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .stat-card {
-        width: 80%;
-        margin-bottom: 10px;
-    }
-
-    .venue-section table,
-    .booking-requests table {
+    .listing-section table {
         display: block;
         overflow-x: auto;
         white-space: nowrap;

@@ -134,30 +134,56 @@
     <hr>
 
     <!-- Add New Listing -->
-    <div class="add-listing">
-        <h3>Add New Listing</h3>
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <label for="service_type">Service Type:</label>
-            <select name="service_type">
-                <option value="Venue">Venue</option>
-                <option value="Catering">Catering</option>
-                <option value="Decoration">Decoration</option>
-                <option value="Photography">Photography</option>
-                <option value="Videography">Videography</option>
-            </select>
-
-            <label for="price">Price:</label>
-            <input type="number" name="price" required>
-
-            <label for="availability">Availability:</label>
-            <input type="date" name="availability" required>
-
-            <label for="images">Upload Images:</label>
-            <input type="file" name="images" multiple>
-
-            <input type="submit" value="Add Listing">
-        </form>
+    <div class="listing-section">
+        <h2>Your Listed Services</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Service Type</th>
+                    <th>Price</th>
+                    <th>Availability</th>
+                    <th>Amenities</th>
+                    <th>Category</th>
+                    <th>City</th>
+                    <th>Status</th>
+                    <th>Image</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for service in service_listings %}
+                <tr>
+                    <td>{{ service.service_type }}</td>
+                    <td>${{ service.price }}</td>
+                    <td>{{ service.availability }}</td>
+                    <td>{{ service.amenities }}</td>
+                    <td>{{ service.category }}</td>
+                    <td>{{ service.city }}</td>
+                    <td>{{ service.status }}</td>
+                    <td>
+                        {% if service.images %}
+                            <img src="{{ service.images.url }}" width="80">
+                        {% else %}
+                            No Image
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'edit_listing' service.id %}" class="btn btn-warning">Edit</a>
+                        <form method="POST" action="{% url 'delete_listing' service.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9">No services added yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'add_listing' %}" class="btn btn-primary">Add New Service</a>
     </div>
+    
 </div>
 {% endblock %}

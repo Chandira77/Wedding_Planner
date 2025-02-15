@@ -4,5 +4,91 @@
 
 {% block content %}
     <link rel="stylesheet" type="text/css" href="{% static 'Wedding/css/catering.css' %}">
-    <h1>this is catering page</h1>
+<div class="container">
+    <!-- First Row: Catering Image & Details -->
+    <div class="row catering-details">
+        <div class="col-md-6">
+            <img src="{% static 'Wedding/images/caterpage.jpeg' %}" class="card-img-top" alt="Temple">
+        </div>
+        <div class="col-md-6">
+            <h2>Catering Services</h2>
+            <p>Find the best catering services for your wedding and special events.</p>
+        </div>
+    </div>
+
+    <!-- Second Row: Filters & Listings -->
+    <div class="row">
+        <!-- Filters Section -->
+        <div class="col-md-3 filters">
+            <h4>Filter Catering Services</h4>
+            <form method="GET">
+                <label>City:</label>
+                <select name="city">
+                    <option value="">Select City</option>
+                    <option value="Kathmandu">Kathmandu</option>
+                    <option value="Pokhara">Pokhara</option>
+                </select>
+
+                <label>Number of Guests:</label>
+                <input type="number" name="guests" min="10" placeholder="Guests">
+
+                <label>Amenities:</label>
+                <input type="checkbox" name="amenities" value="Vegetarian"> Vegetarian  
+                <input type="checkbox" name="amenities" value="Non-Vegetarian"> Non-Vegetarian  
+
+                <label>Price Range:</label>
+                <input type="number" name="min_price" placeholder="Min Price">
+                <input type="number" name="max_price" placeholder="Max Price">
+
+                <button type="submit" class="btn btn-primary">Apply Filters</button>
+            </form>
+        </div>
+
+        <!-- Catering Listings -->
+        <div class="col-md-9 listings">
+            <h4>Available Catering Services</h4>
+            {% for service in catering_services %}
+            <div class="listing-card">
+                {% if service.images %}
+                    <img src="{{ service.images.url }}" class="listing-img">
+                {% else %}
+                    <img src="{% static 'Wedding/images/default_catering.jpg' %}" class="listing-img">
+                {% endif %}
+    
+                <h5>{{ service.service_type }}</h5>
+                <p>Price: ${{ service.price }}</p>
+                <p>Available: {{ service.availability }}</p>
+                <p>Amenities: {{ service.amenities }}</p>
+    
+                <a href="{% url 'service_detail' service.id %}" class="btn btn-info">View Details</a>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestPricingModal">Request Pricing</button>
+            </div>
+            {% empty %}
+            <p>No catering services available.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Request Pricing Form (Popup) -->
+<div id="requestPricingForm" class="popup-form">
+    <form method="POST" action="{% url 'request_pricing' %}">
+        {% csrf_token %}
+        <input type="hidden" name="service_id" id="serviceId">
+        <label>Name:</label>
+        <input type="text" name="name" required>
+
+        <label>Email:</label>
+        <input type="email" name="email" required>
+
+        <label>Event Date:</label>
+        <input type="date" name="event_date" required>
+
+        <label>Message:</label>
+        <textarea name="message"></textarea>
+
+        <button type="submit" class="btn btn-success">Send Request</button>
+        <button type="button" onclick="closeRequestForm()" class="btn btn-danger">Cancel</button>
+    </form>
+</div>
 {% endblock %}

@@ -1,106 +1,102 @@
-/* Footer Styling */
 footer {
-    background-color: gray;
-    color: white;
+    background: #2c3e50; /* Dark blue shade */
+    color: #ecf0f1; /* Light text color */
     padding: 40px 0;
-    text-align: center;
+    font-family: 'Poppins', sans-serif;
 }
 
-/* Footer Container */
 footer .container {
     max-width: 1100px;
     margin: auto;
+    text-align: center;
 }
 
-/* Footer Sections */
+footer h4 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #f8c471; /* Gold accent color */
+}
+
+footer p, footer a {
+    font-size: 16px;
+    color: #ecf0f1;
+    text-decoration: none;
+}
+
+footer a:hover {
+    color: #f39c12; /* Soft orange hover effect */
+}
+
 footer .row {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
+    text-align: left;
     gap: 20px;
 }
 
-/* Footer Columns */
 footer .col-md-4 {
     flex: 1;
     min-width: 280px;
 }
 
-/* Footer Headings */
-footer h4 {
-    font-size: 1.5rem;
-    margin-bottom: 15px;
-    font-weight: 600;
-}
-
-/* Footer Paragraphs and Links */
-footer p, footer a {
-    font-size: 1rem;
-    color: #bbb;
-    text-decoration: none;
-}
-
-/* Quick Links */
-.quick-links ul {
+footer .quick-links ul {
     list-style: none;
     padding: 0;
 }
 
-.quick-links ul li {
-    margin-bottom: 8px;
+footer .quick-links ul li {
+    margin: 8px 0;
 }
 
-.quick-links ul li a:hover {
-    color: #ff6f61;
-}
-
-/* Social Media Links */
-.social-media a {
+footer .social-media a {
     display: inline-block;
-    color: #ff6f61;
     margin: 5px;
-    font-size: 1.2rem;
-    transition: color 0.3s;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: 0.3s;
 }
 
-.social-media a:hover {
-    color: #e35d50;
+footer .social-media a:hover {
+    background: #f39c12;
+    color: #2c3e50;
 }
 
-/* Newsletter Section */
 .newsletter {
-    margin-top: 30px;
-    text-align: center;
+    margin-top: 20px;
 }
 
 .newsletter input {
-    width: 80%;
+    width: 100%;
+    max-width: 350px;
     padding: 10px;
-    border-radius: 8px;
+    border-radius: 5px;
     border: none;
-    outline: none;
+    margin-top: 10px;
 }
 
 .newsletter button {
-    background-color: #ff6f61;
-    color: white;
+    background: #f39c12;
     border: none;
-    padding: 10px 15px;
-    border-radius: 8px;
+    padding: 10px 20px;
+    margin-top: 10px;
+    border-radius: 5px;
+    color: #2c3e50;
     font-weight: bold;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: 0.3s;
 }
 
 .newsletter button:hover {
-    background-color: #e35d50;
+    background: #e67e22;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
     footer .row {
         flex-direction: column;
-        align-items: center;
         text-align: center;
     }
 }

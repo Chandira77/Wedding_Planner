@@ -1,0 +1,22 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <h2>Confirm Booking Rejection</h2>
+
+    <div class="booking-details">
+        <p><strong>Customer:</strong> {{ booking.customer.username }}</p>
+        <p><strong>Service:</strong> {{ booking.service }}</p>
+        <p><strong>Date:</strong> {{ booking.date }}</p>
+        <p><strong>Total Price:</strong> ${{ booking.total_price }}</p>
+        <p><strong>Special Requests:</strong> {{ booking.special_requests|default:"None" }}</p>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <p>Are you sure you want to reject this booking?</p>
+        <button type="submit" class="btn btn-danger">Reject Booking</button>
+        <a href="{% url 'sellerdashboard' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+/* Page Layout */
+.container {
+    margin: 30px auto;
+    padding: 20px;
+}
+
+/* Catering Details */
+.catering-details {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.catering-image {
+    width: 100%;
+    border-radius: 10px;
+}
+
+/* Filters */
+.filters {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.filters label {
+    font-weight: bold;
+    margin-top: 10px;
+    display: block;
+}
+
+.filters input, .filters select {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Listings */
+.listings {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.listing-card {
+    width: 48%;
+    margin: 1%;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.listing-img {
+    width: 100%;
+    border-radius: 5px;
+}
+
+/* Request Pricing Form */
+.popup-form {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+.popup-form input, .popup-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}

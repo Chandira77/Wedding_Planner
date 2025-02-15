@@ -44,6 +44,27 @@ class Venue(models.Model):
         return self.name
 
 
+class ServiceListing(models.Model):
+    SERVICE_TYPES = [
+        ('Catering', 'Catering'),
+        ('Decoration', 'Decoration'),
+        ('Photography', 'Photography'),
+        ('Videography', 'Videography'),
+    ]
+
+    seller = models.ForeignKey(User, on_delete=models.CASCADE)  # Seller info
+    service_type = models.CharField(max_length=50, choices=SERVICE_TYPES)  # Service category
+    price = models.DecimalField(max_digits=10, decimal_places=2)  # Price
+    availability = models.DateField()  # Available date
+    amenities = models.TextField(blank=True, null=True)  # Additional features
+    category = models.CharField(max_length=100)  # Service category
+    city = models.CharField(max_length=100)  # City
+    status = models.CharField(max_length=20, choices=[('Active', 'Active'), ('Inactive', 'Inactive')], default='Active')  # Status
+    images = models.ImageField(upload_to='service_images/', blank=True, null=True)  # Image Upload
+    created_at = models.DateTimeField(auto_now_add=True)  # Timestamp
+
+    def __str__(self):
+        return f"{self.service_type} - {self.seller.username}"
 
 
 class PricingRequest(models.Model):

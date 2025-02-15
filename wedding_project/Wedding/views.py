@@ -1,15 +1,15 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from .forms import VenueForm, SellerProfileForm
+from .forms import VenueForm, ServiceListingForm, SellerProfileForm
 from django.core.paginator import Paginator
 from django.db.models import Q, Sum
 from django import forms
-from .models import Venue, SellerProfile, Booking, Review, SellerEarnings, PricingRequest
+from .models import Venue, ServiceListing, SellerProfile, Booking, Review, SellerEarnings, PricingRequest
 import json
 from django.urls import reverse
 from django.http import JsonResponse
@@ -199,34 +199,43 @@ def send_request(request):
 
 @login_required
 def sellerdashboard(request):
-    user = request.user 
+    user = request.user  
 
+    # Get the seller profile
     seller_profile = get_object_or_404(SellerProfile, user=user)
+    if not seller_profile:
+        return HttpResponse("Seller profile not found. Please register as a seller.", status=404)
     
     print("Seller Profile:", seller_profile)
 
-    venues = Venue.objects.filter(seller=user)
+    # Fetch venues and service listings
+    venues = Venue.objects.filter(seller=user)  
+    service_listings = ServiceListing.objects.filter(seller=user)  # ✅ Fetch service listings
 
+    # Add withdrawal URL for venues
     for venue in venues:
         venue.withdraw_url = reverse('withdraw_funds', args=[venue.id])
 
+    # Dashboard statistics
+    total_venue_listings = venues.count()
+    total_service_listings = service_listings.count()  # ✅ Count service listings
+    total_listings = total_venue_listings + total_service_listings  # ✅ Combined total
 
-    # Fetch dashboard statistics
-    total_listings = venues.count()
     total_earnings = SellerEarnings.objects.filter(seller=user).aggregate(Sum('total_earnings'))['total_earnings__sum'] or 0
-
 
     # Get bookings for seller's venues
     bookings = Booking.objects.filter(venue__in=venues, status='Pending')
-
     pending_bookings = bookings.count()  # Count of pending bookings
 
     context = {
         'seller': seller_profile,
         'total_listings': total_listings,
+        'total_venue_listings': total_venue_listings,
+        'total_service_listings': total_service_listings,  # ✅ Include service listings count
         'pending_bookings': pending_bookings,
         'total_earnings': total_earnings,
         'venues': venues,
+        'service_listings': service_listings,  # ✅ Include service listings in the context
         'bookings': bookings,
     }
 
@@ -265,57 +274,77 @@ def edit_seller_profile(request):
 @login_required
 def add_listing(request):
     if request.method == "POST":
-        form = VenueForm(request.POST, request.FILES)
+        form = ServiceListingForm(request.POST, request.FILES)
         if form.is_valid():
             listing = form.save(commit=False)
-            listing.seller = request.user.SellerProfile
-            listing.save()
-            messages.success(request, "Listing added successfully!")
-            return redirect('sellerdashboard')
+
+            # Correctly access the SellerProfile
+            try:
+                seller_profile = SellerProfile.objects.get(user=request.user)  # Fetch the SellerProfile
+                listing.seller = request.user  # Assign the User object, since your model expects User
+                listing.save()
+                messages.success(request, "Listing added successfully!")
+                return redirect('sellerdashboard')
+            except SellerProfile.DoesNotExist:
+                messages.error(request, "Seller profile not found! Please complete your profile first.")
+                return redirect('sellerdashboard')
+
     else:
-        form = VenueForm()
-    
-    return render(request, 'add_listing.html', {'form': form})
+        form = ServiceListingForm()
+
+    return render(request, 'dashboard/add_listing.html', {'form': form})
 
 
 @login_required
-def edit_listing(request, listing_id):
-    listing = get_object_or_404(Venue, id=listing_id, seller=request.user.seller)
+def edit_listing(request, service_id):  
+    listing = get_object_or_404(ServiceListing, id=service_id, seller=request.user)
+
     if request.method == "POST":
-        form = VenueForm(request.POST, request.FILES, instance=listing)
+        form = ServiceListingForm(request.POST, request.FILES, instance=listing)
         if form.is_valid():
             form.save()
             messages.success(request, "Listing updated successfully!")
             return redirect('sellerdashboard')
     else:
-        form = VenueForm(instance=listing)
+        form = ServiceListingForm(instance=listing)
 
-    return render(request, 'edit_listing.html', {'form': form})
+    return render(request, 'dashboard/edit_listing.html', {'form': form})
 
 @login_required
 def delete_listing(request, listing_id):
-    listing = get_object_or_404(Venue, id=listing_id, seller=request.user.seller)
-    listing.delete()
-    messages.success(request, "Listing deleted successfully!")
-    return redirect('sellerdashboard')
+    listing = get_object_or_404(ServiceListing, id=listing_id, seller=request.user.seller)
+    if request.method == "POST":
+        listing.delete()
+        messages.success(request, "Listing deleted successfully!")
+        return redirect('sellerdashboard')
+    
+    return render(request, 'wedding/delete_listing.html', {'listing': listing})
 
 
 @login_required
 def accept_booking(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id, seller=request.user.seller)
-    booking.status = 'Accepted'
-    booking.save()
-    messages.success(request, "Booking accepted!")
-    return redirect('sellerdashboard')
+
+    if request.method == "POST":
+        booking.status = "Accepted"
+        booking.save()
+        messages.success(request, "Booking accepted successfully!")
+        return redirect('sellerdashboard')
+
+    return render(request, 'accept_booking.html', {'booking': booking})
 
 
 @login_required
 def reject_booking(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id, seller=request.user.seller)
-    booking.status = 'Rejected'
-    booking.save()
-    messages.success(request, "Booking rejected!")
-    return redirect('sellerdashboard')
+
+    if request.method == "POST":
+        booking.status = "Rejected"
+        booking.save()
+        messages.warning(request, "Booking rejected.")
+        return redirect('sellerdashboard')
+
+    return render(request, 'reject_booking.html', {'booking': booking})
 
 
 @login_required
@@ -466,7 +495,8 @@ def photography(request):
     return render(request, 'Wedding/photography.html')
 
 def catering(request):
-    return render(request, 'Wedding/catering.html')
+    caterings = ServiceListing.objects.filter(service_type="Catering", status="Active") 
+    return render(request, 'Wedding/catering.html', {'caterings': caterings})
 
 def decorations(request):
     return render(request, 'Wedding/decorations.html')

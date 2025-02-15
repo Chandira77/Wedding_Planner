@@ -42,8 +42,9 @@ urlpatterns = [
     path('dashboard/accept_booking/<int:venue_id>/', views.accept_booking, name='accept_booking'),
     path('dashboard/reject_booking/<int:venue_id>/', views.reject_booking, name='reject_booking'),
     path('dashboard/withdraw_funds/<int:venue_id>/', views.withdraw_funds, name='withdraw_funds'),
-    path('dashboard/edit_listing/<int:venue_id>/', views.edit_listing, name='edit_listing'),
-    path('dashboard/add_listing/<int:venue_id>/', views.add_listing, name='add_listing'),
+    path('dashboard/edit_listing/<int:service_id>/', views.edit_listing, name='edit_listing'),
+    path('dashboard/add_listing/', views.add_listing, name='add_listing'),
+    path('dashboard/delete_listing/<int:service_id>/', views.delete_listing, name='delete_listing'),
     path('venues/filter/', views.filter_venues, name='filter_venues'),
 
 

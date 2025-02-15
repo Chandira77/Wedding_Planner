@@ -8,7 +8,7 @@ from django.conf import settings
 from .models import Profile
 from django.contrib.auth.decorators import login_required
 from .forms import SignupForm, LoginForm
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import get_user_model, authenticate, login, logout
 
 # wedding/views.py
 from django.shortcuts import render, get_object_or_404
@@ -40,13 +40,16 @@ def login_view(request):
     return render(request, 'Authentication/login.html')
 
 
+User = get_user_model()  # Get the custom user model if using custom User model
+
 def register_view(request):
     if request.method == "POST":
         username = request.POST.get("username")
         email = request.POST.get("email")
         password = request.POST.get("password")
         confirm_password = request.POST.get("confirm_password")
-        role = request.POST.get("role")  # Get role from form
+        role = request.POST.get("role")  
+        business_category = request.POST.get("business_category")  # Get seller's category
 
         # Validate input
         if not username or not email or not password or not confirm_password:
@@ -71,10 +74,21 @@ def register_view(request):
             messages.error(request, "Invalid role selected.")
             return redirect("register")
 
-        # Create user and profile
+        # ✅ Create user and profile
         try:
             user = User.objects.create_user(username=username, email=email, password=password)
-            Profile.objects.create(user=user, role=role)
+            
+            # ✅ If seller, include business category, otherwise keep it empty
+            if role == "seller" and not business_category:
+                messages.error(request, "Business category is required for sellers.")
+                return redirect("register")
+
+            Profile.objects.create(
+                user=user, 
+                role=role, 
+                business_category=business_category if role == "seller" else None
+            )
+
             messages.success(request, "Registration successful! You can now log in.")
             return redirect("login")
         except Exception as e:
