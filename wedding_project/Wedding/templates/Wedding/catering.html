@@ -12,7 +12,7 @@
         </div>
         <div class="col-md-6">
             <h2>Catering Services</h2>
-            <p>Find the best catering services for your wedding and special events.</p>
+            <p>A wedding is a celebration of love, and great food makes it even more memorable! Our catering services bring you the finest cuisines, customized menus, and exceptional hospitality. Whether you want a grand feast, a traditional banquet, or an intimate gathering, we ensure that every dish delights your guests. Choose from our top-rated catering services and make your wedding a flavorful success!</p>
         </div>
     </div>
 
@@ -46,8 +46,8 @@
 
         <!-- Catering Listings -->
         <div class="col-md-9 listings">
-            <h4>Available Catering Services</h4>
-            {% for service in catering_services %}
+            <!-- <h4>Available Catering Services</h4> -->
+            {% for service in caterings %}
             <div class="listing-card">
                 {% if service.images %}
                     <img src="{{ service.images.url }}" class="listing-img">
@@ -60,7 +60,7 @@
                 <p>Available: {{ service.availability }}</p>
                 <p>Amenities: {{ service.amenities }}</p>
     
-                <a href="{% url 'service_detail' service.id %}" class="btn btn-info">View Details</a>
+                <a href="{% url 'venue_detail' service.id %}" class="btn btn-info">View Details</a>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestPricingModal">Request Pricing</button>
             </div>
             {% empty %}

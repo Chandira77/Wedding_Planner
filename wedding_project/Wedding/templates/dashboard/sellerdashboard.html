@@ -54,7 +54,13 @@
             <tbody>
                 {% for venue in venues %}
                 <tr>
-                    <td><img src="{{ venue.image.url }}" alt="{{ venue.name }}" width="80"></td>
+                    <td>
+                        {% if venue.image %}
+                            <img src="{{ venue.image.url }}" alt="{{ venue.name }}" width="80">
+                        {% else %}
+                            <img src="{% static 'images/default_img.jpeg' %}" alt="No Image" width="80">
+                        {% endif %}
+                    </td>
                     <td>{{ venue.name }}</td>
                     <td>{{ venue.get_category_display }}</td>
                     <td>{{ venue.city }}</td>

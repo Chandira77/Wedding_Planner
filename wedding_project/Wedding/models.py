@@ -44,6 +44,8 @@ class Venue(models.Model):
         return self.name
 
 
+
+
 class ServiceListing(models.Model):
     SERVICE_TYPES = [
         ('Catering', 'Catering'),
@@ -53,6 +55,8 @@ class ServiceListing(models.Model):
     ]
 
     seller = models.ForeignKey(User, on_delete=models.CASCADE)  # Seller info
+    name = models.CharField(max_length=255, default="Unnamed Service")
+    description = models.TextField(default="No description available")
     service_type = models.CharField(max_length=50, choices=SERVICE_TYPES)  # Service category
     price = models.DecimalField(max_digits=10, decimal_places=2)  # Price
     availability = models.DateField()  # Available date

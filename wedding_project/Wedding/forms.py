@@ -30,6 +30,8 @@ class VenueForm(forms.ModelForm):
         }
 
 
+
+
 class ServiceListingForm(forms.ModelForm):
     class Meta:
         model = ServiceListing
