@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from .forms import VenueForm, ServiceListingForm, SellerProfileForm
 from django.core.paginator import Paginator
-from django.db.models import Q, Sum
+from django.db.models import Q, Sum, Count, Prefetch
 from django import forms
 from .models import Venue, ServiceListing, SellerProfile, Booking, Review, SellerEarnings, PricingRequest
 import json
@@ -201,16 +201,15 @@ def send_request(request):
 def sellerdashboard(request):
     user = request.user  
 
-    # Get the seller profile
-    seller_profile = get_object_or_404(SellerProfile, user=user)
-    if not seller_profile:
-        return HttpResponse("Seller profile not found. Please register as a seller.", status=404)
-    
-    print("Seller Profile:", seller_profile)
+    # Check if user is a seller
+    try:
+        seller_profile = SellerProfile.objects.get(user=user)
+    except SellerProfile.DoesNotExist:
+        return redirect('seller_registration')  # Redirect to registration page
 
     # Fetch venues and service listings
-    venues = Venue.objects.filter(seller=user)  
-    service_listings = ServiceListing.objects.filter(seller=user)  # ✅ Fetch service listings
+    venues = Venue.objects.filter(seller=user).prefetch_related('bookings')
+    service_listings = ServiceListing.objects.filter(seller=user)
 
     # Add withdrawal URL for venues
     for venue in venues:
@@ -218,29 +217,39 @@ def sellerdashboard(request):
 
     # Dashboard statistics
     total_venue_listings = venues.count()
-    total_service_listings = service_listings.count()  # ✅ Count service listings
-    total_listings = total_venue_listings + total_service_listings  # ✅ Combined total
+    total_service_listings = service_listings.count()
+    total_listings = total_venue_listings + total_service_listings 
 
     total_earnings = SellerEarnings.objects.filter(seller=user).aggregate(Sum('total_earnings'))['total_earnings__sum'] or 0
 
-    # Get bookings for seller's venues
-    bookings = Booking.objects.filter(venue__in=venues, status='Pending')
-    pending_bookings = bookings.count()  # Count of pending bookings
+    # Get different booking statuses
+    bookings = Booking.objects.filter(venue__in=venues).select_related('venue')
+    pending_bookings = bookings.filter(status='Pending').count()
+    confirmed_bookings = bookings.filter(status='Confirmed').count()
+    completed_bookings = bookings.filter(status='Completed').count()
+    canceled_bookings = bookings.filter(status='Canceled').count()
+
+    # Get recent transactions (last 5 withdrawals)
+    recent_transactions = SellerEarnings.objects.filter(seller=user).order_by('created_at')  # ✅ Correct field
+
 
     context = {
         'seller': seller_profile,
         'total_listings': total_listings,
         'total_venue_listings': total_venue_listings,
-        'total_service_listings': total_service_listings,  # ✅ Include service listings count
+        'total_service_listings': total_service_listings,
         'pending_bookings': pending_bookings,
+        'confirmed_bookings': confirmed_bookings,
+        'completed_bookings': completed_bookings,
+        'canceled_bookings': canceled_bookings,
         'total_earnings': total_earnings,
         'venues': venues,
-        'service_listings': service_listings,  # ✅ Include service listings in the context
-        'bookings': bookings,
+        'service_listings': service_listings,
+        'bookings': bookings[:5],  # Show only the latest 5 bookings
+        'recent_transactions': recent_transactions,  # Add recent earnings transactions
     }
 
     return render(request, 'dashboard/sellerdashboard.html', context)
-
 @login_required
 def login_success(request):
     if request.user.groups.filter(name="Seller").exists():
@@ -311,14 +320,15 @@ def edit_listing(request, service_id):
     return render(request, 'dashboard/edit_listing.html', {'form': form})
 
 @login_required
-def delete_listing(request, listing_id):
-    listing = get_object_or_404(ServiceListing, id=listing_id, seller=request.user.seller)
+def delete_listing(request, service_id):
+    listing = get_object_or_404(ServiceListing, id=service_id, seller=request.user)  # Directly filter by request.user
     if request.method == "POST":
         listing.delete()
         messages.success(request, "Listing deleted successfully!")
         return redirect('sellerdashboard')
-    
+
     return render(request, 'wedding/delete_listing.html', {'listing': listing})
+
 
 
 @login_required
@@ -497,6 +507,24 @@ def photography(request):
 def catering(request):
     caterings = ServiceListing.objects.filter(service_type="Catering", status="Active") 
     return render(request, 'Wedding/catering.html', {'caterings': caterings})
+
+
+def catering_detail(request, id):
+    service = get_object_or_404(ServiceListing, id=id)
+    return render(request, 'Wedding/catering_details.html', {'service': service})
+
+
+def calculate_price(request, id):
+    """AJAX request handler for price calculation."""
+    if request.method == "POST":
+        service = get_object_or_404(ServiceListing, id=id)
+        guests = int(request.POST.get('guests', 0))
+        selected_amenities = request.POST.getlist('amenities')
+
+        total_price = service.calculate_price(guests, selected_amenities)
+        return JsonResponse({'total_price': total_price})
+
+
 
 def decorations(request):
     return render(request, 'Wedding/decorations.html')

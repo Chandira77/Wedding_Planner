@@ -1,5 +1,5 @@
 from django import forms
-
+import json
 from .models import Venue, ServiceListing, PricingRequest, SellerProfile
 
 class VenueForm(forms.ModelForm):
@@ -33,13 +33,27 @@ class VenueForm(forms.ModelForm):
 
 
 class ServiceListingForm(forms.ModelForm):
+    # Amenities pricing input as JSON string
+    amenities_price = forms.CharField(
+        widget=forms.Textarea(attrs={'placeholder': 'Enter amenities price as JSON, e.g., {"Wifi": 10, "Decoration": 50}'}),
+        required=False
+    )
+
     class Meta:
         model = ServiceListing
-        fields = ['service_type', 'price', 'availability', 'amenities', 'category', 'city', 'status', 'images']
+        fields = ['service_type', 'base_price', 'extra_guest_price', 'amenities_price', 
+                  'availability', 'category', 'city', 'status', 'images']
         widgets = {
             'availability': forms.DateInput(attrs={'type': 'date'}),
         }
 
+    def clean_amenities_price(self):
+        """Validate amenities_price field to ensure proper JSON format."""
+        data = self.cleaned_data.get('amenities_price', '{}')
+        try:
+            return json.loads(data) if data else {}
+        except json.JSONDecodeError:
+            raise forms.ValidationError("Invalid JSON format for amenities price. Example: {'Wifi': 10, 'Decoration': 50}")
 
 class SellerProfileForm(forms.ModelForm):
     class Meta:

@@ -101,7 +101,7 @@
                 <tr>
                     <td>{{ booking.customer.username }}</td>
                     <td>{{ booking.service }}</td>
-                    <td>{{ booking.date }}</td>
+                    <td>{{ booking.created_at }}</td>
                     <td>{{ booking.status }}</td>
                     <td>
                         <a href="{% url 'accept_booking' booking.id %}" class="btn btn-success">Accept</a>
@@ -123,20 +123,27 @@
     <div class="earnings-report">
         <h3>Earnings Report</h3>
         <p>Total Revenue: ${{ total_earnings }}</p>
-        {% if venues %}
-            {% for venue in venues %}
-                {% if venue.id %}
-                    <a href="{% url 'withdraw_funds' venue.id %}">Withdraw Funds</a>
-                {% else %}
-                    <span>Withdrawal unavailable</span>
-                {% endif %}
-            {% endfor %}
+    
+        {% if service_listings or venues %}
+            <ul>
+                {% for service in service_listings %}
+                    <li>
+                        {{ service.name }} - 
+                        <a href="{% url 'withdraw_funds' service.id %}">Withdraw Funds</a>
+                    </li>
+                {% endfor %}
+                
+                {% for venue in venues %}
+                    <li>
+                        {{ venue.name }} (Venue) - 
+                        <a href="{% url 'withdraw_funds' venue.id %}">Withdraw Funds</a>
+                    </li>
+                {% endfor %}
+            </ul>
         {% else %}
-            <span>No venues available for withdrawal.</span>
+            <span>No services or venues available for withdrawal.</span>
         {% endif %}
-
     </div>
-
     <hr>
 
     <!-- Add New Listing -->
@@ -146,7 +153,10 @@
             <thead>
                 <tr>
                     <th>Service Type</th>
-                    <th>Price</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Base_Price</th>
+                    <th>Extra Guest Price</th>
                     <th>Availability</th>
                     <th>Amenities</th>
                     <th>Category</th>
@@ -160,9 +170,19 @@
                 {% for service in service_listings %}
                 <tr>
                     <td>{{ service.service_type }}</td>
-                    <td>${{ service.price }}</td>
+                    <td>{{ service.name }}</td>
+                    <td>{{ service.description }}</td>
+                    <td>${{ service.base_price }}</td>
+                    <td>${{ service.extra_guest_price }}</td>
                     <td>{{ service.availability }}</td>
-                    <td>{{ service.amenities }}</td>
+                    <!-- <td>{{ service.amenities }}</td> -->
+                    <td>
+                        {% for amenity, price in service.get_amenities_price.items %}
+                            {{ amenity }}: ${{ price }}<br>
+                        {% empty %}
+                            No amenities added
+                        {% endfor %}
+                    </td>                    
                     <td>{{ service.category }}</td>
                     <td>{{ service.city }}</td>
                     <td>{{ service.status }}</td>
@@ -170,9 +190,9 @@
                         {% if service.images %}
                             <img src="{{ service.images.url }}" width="80">
                         {% else %}
-                            No Image
+                            <img src="{% static 'images/default_img.jpeg' %}" alt="No Image" width="80">
                         {% endif %}
-                    </td>
+                    </td>                    
                     <td>
                         <a href="{% url 'edit_listing' service.id %}" class="btn btn-warning">Edit</a>
                         <form method="POST" action="{% url 'delete_listing' service.id %}" style="display:inline;">

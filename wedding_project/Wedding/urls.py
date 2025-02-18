@@ -17,7 +17,14 @@ urlpatterns = [
     path("send-request/", send_request, name="send_request"),
     path('<str:venue_type>/', views.venue_type, name='venue_type'),
     path('services/photography/', photography, name='photography'),
+
+
     path('services/catering/', views.catering, name='catering'),
+    path('catering/<int:id>/', views.catering_detail, name='catering_detail'),
+    path('services/catering/<int:id>/calculate_price/', views.calculate_price, name='calculate_price'),
+
+
+
     path('services/decorations/', views.decorations, name='decorations'),
     #path('venues/<int:venue_id>/', views.venue_detail, name='venue_detail'),
     path('test/', test_view, name='test_view'),

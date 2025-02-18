@@ -26,7 +26,8 @@
                 <select name="city">
                     <option value="">Select City</option>
                     <option value="Kathmandu">Kathmandu</option>
-                    <option value="Pokhara">Pokhara</option>
+                    <option value="Bhaktapur">Bhaktapur</option>
+                    <option value="Lalitpur">Lalitpur</option>
                 </select>
 
                 <label>Number of Guests:</label>
@@ -56,11 +57,14 @@
                 {% endif %}
     
                 <h5>{{ service.service_type }}</h5>
+                <h5>{{ service.name }}</h5>
+                <h5>{{ service.description }}</h5>
                 <p>Price: ${{ service.price }}</p>
+                <p>City: {{ service.city }} </p>
                 <p>Available: {{ service.availability }}</p>
                 <p>Amenities: {{ service.amenities }}</p>
     
-                <a href="{% url 'venue_detail' service.id %}" class="btn btn-info">View Details</a>
+                <a href="{% url 'catering_detail' service.id %}" class="btn btn-info">View Details</a>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestPricingModal">Request Pricing</button>
             </div>
             {% empty %}

@@ -1,7 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.utils.timezone import now
 from datetime import date
+import json
 
 
 
@@ -58,18 +60,31 @@ class ServiceListing(models.Model):
     name = models.CharField(max_length=255, default="Unnamed Service")
     description = models.TextField(default="No description available")
     service_type = models.CharField(max_length=50, choices=SERVICE_TYPES)  # Service category
-    price = models.DecimalField(max_digits=10, decimal_places=2)  # Price
-    availability = models.DateField()  # Available date
-    amenities = models.TextField(blank=True, null=True)  # Additional features
     category = models.CharField(max_length=100)  # Service category
     city = models.CharField(max_length=100)  # City
     status = models.CharField(max_length=20, choices=[('Active', 'Active'), ('Inactive', 'Inactive')], default='Active')  # Status
     images = models.ImageField(upload_to='service_images/', blank=True, null=True)  # Image Upload
     created_at = models.DateTimeField(auto_now_add=True)  # Timestamp
+    availability = models.DateField()  # Available date
+    
+    # Dynamic Pricing Fields
+    base_price = models.DecimalField(max_digits=10, decimal_places=2)  # Base price
+    extra_guest_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)  # Extra guest charge per head
+    amenities_price = models.JSONField(default=dict, blank=True)  # Stores amenities pricing in JSON format
+
+    def get_amenities_price(self):
+        """Return amenities as a dictionary"""
+        return self.amenities_price if isinstance(self.amenities_price, dict) else json.loads(self.amenities_price)
+
+    def calculate_total_price(self, guests=0, selected_amenities=[]):
+        """Calculate total price based on guests and selected amenities"""
+        total = self.base_price + (guests * self.extra_guest_price)
+        for amenity in selected_amenities:
+            total += self.get_amenities_price().get(amenity, 0)
+        return total
 
     def __str__(self):
         return f"{self.service_type} - {self.seller.username}"
-
 
 class PricingRequest(models.Model):
     STATUS_CHOICES = [
@@ -128,6 +143,7 @@ class Review(models.Model):
 class SellerEarnings(models.Model):
     seller = models.ForeignKey(User, on_delete=models.CASCADE)
     total_earnings = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    created_at = models.DateTimeField(default=now)  # ✅ Add timestamp
 
     def __str__(self):
-        return f"{self.seller.business_name} Earnings"
+        return f"{self.seller.username} Earnings"
