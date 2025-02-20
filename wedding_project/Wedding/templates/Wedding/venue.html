@@ -107,47 +107,32 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form action="{% url 'send_request' %}" method="POST">
+                        <form method="POST" action="{% url 'request_pricing' %}">
                             {% csrf_token %}
-                            <input type="hidden" id="venueId" name="venue_id">
-            
-                            <div class="mb-3">
-                                <label class="form-label">Venue Name</label>
-                                <input type="text" id="venueName" name="venue_name" class="form-control">
-                            </div>
-            
-                            <div class="mb-3">
-                                <label class="form-label">First Name</label>
-                                <input type="text" name="first_name" class="form-control" required>
-                            </div>
-        
-                            <div class="mb-3">
-                                <label class="form-label">Last Name</label>
-                                <input type="text" name="last_name" class="form-control" required>
-                            </div>
-            
-                            <div class="mb-3">
-                                <label class="form-label">Email</label>
-                                <input type="email" name="email" class="form-control" required>
-                            </div>
-        
-                            <div class="mb-3">
-                                <label class="form-label">Phone Number</label>
-                                <input type="text" name="phone" class="form-control" required>
-                            </div>
-            
-                            <div class="mb-3">
-                                <label class="form-label">Event Date</label>
-                                <input type="date" name="event_date" class="form-control" required>
-                            </div>
-            
-                            <div class="mb-3">
-                                <label class="form-label">Message</label>
-                                <textarea name="message" class="form-control" rows="3" required></textarea>
-                            </div>
-            
-                            <button type="submit" class="btn btn-primary">Send Request</button>
+                            <input type="hidden" name="service_name" value="{{ service.name }}"> 
+                            <input type="hidden" name="seller_email" value="{{ service.seller.email }}">  <!-- Get seller's email -->
+                        
+                            <label>First Name:</label>
+                            <input type="text" name="first_name" required>
+                        
+                            <label>Last Name:</label>
+                            <input type="text" name="last_name" required>
+                        
+                            <label>Email:</label>
+                            <input type="email" name="email" required>
+                        
+                            <label>Phone:</label>
+                            <input type="text" name="phone" required>
+                        
+                            <label>Event Date:</label>
+                            <input type="date" name="event_date" required>
+                        
+                            <label>Message:</label>
+                            <textarea name="message"></textarea>
+                        
+                            <button type="submit">Send Request</button>
                         </form>
+                        
                     </div>
                 </div>
             </div>

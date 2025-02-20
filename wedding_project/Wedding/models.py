@@ -93,7 +93,8 @@ class PricingRequest(models.Model):
         ('Rejected', 'Rejected'),
     ]
 
-    venue = models.ForeignKey(Venue, on_delete=models.SET_NULL, null=True, blank=True)
+    service_name = models.CharField(max_length=200)  # Store service name (Venue, Catering, etc.)
+    seller_email = models.EmailField(default="irachand620@gmail.com")  # Seller's email who will receive the request
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField()

@@ -136,38 +136,42 @@ def venue_type(request, venue_type):
 @csrf_exempt
 def request_pricing(request):
     if request.method == "POST":
-        venue_id = request.POST.get("venue_id")
-        venue_name = request.POST.get("venue_name")
-        first_name = request.POST.get("first_name")
-        last_name = request.POST.get("last_name")
-        email = request.POST.get("email")
-        phone = request.POST.get("phone")
-        event_date = request.POST.get("event_date")
-        message = request.POST.get("message")
+        service_name = request.POST.get("service_name")  # Get service name
+        seller_email = request.POST.get("seller_email")  # Get seller's email
 
-        # Save request to database (optional)
-        PricingRequest.objects.create(
-            venue_id=venue_id,
-            venue_name=venue_name,
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-            phone=phone,
-            event_date=event_date,
-            message=message
+        new_request = PricingRequest.objects.create(
+            service_name=service_name,
+            seller_email=seller_email,
+            first_name=request.POST["first_name"],
+            last_name=request.POST["last_name"],
+            email=request.POST["email"],
+            phone=request.POST["phone"],
+            event_date=request.POST["event_date"],
+            message=request.POST["message"],
         )
 
-        # Send email to seller (optional)
+        # Send email to seller
         send_mail(
-            f"New Pricing Request for {venue_name}",
-            f"Name: {first_name} {last_name}\nEmail: {email}\nPhone: {phone}\nEvent Date: {event_date}\nMessage: {message}",
-            "admin@yourwebsite.com",
-            ["seller@example.com"],
+            subject=f"New Pricing Request for {service_name}",
+            message=f"You have received a new pricing request from {new_request.first_name} {new_request.last_name}.\n\n"
+                    f"Service: {service_name}\n"
+                    f"Customer Email: {new_request.email}\n"
+                    f"Phone: {new_request.phone}\n"
+                    f"Event Date: {new_request.event_date}\n"
+                    f"Message: {new_request.message}\n\n"
+                    "Please check your dashboard to respond.",
+            from_email="your-email@example.com",
+            recipient_list=[seller_email],  # Send to seller
+            fail_silently=False,
         )
 
-        return JsonResponse({"message": "Your request has been sent successfully!"})
+        return redirect("success_page")  # Update with your actual success page
 
     return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+def success_page(request):
+    return render(request, "Wedding/success.html")
 
 @csrf_exempt
 def send_request(request):
@@ -485,21 +489,29 @@ def save_pricing(request):
         return JsonResponse({"status": "success"})
     
 
+
 def calculate_price(request):
     if request.method == "POST":
         data = json.loads(request.body)
         guest_count = int(data.get("guest_count", 0))
         selected_amenities = data.get("amenities", [])
+        service_id = data.get("service_id")  # Service ID from request
+        service_type = data.get("service_type")  # Service type (venue/catering/etc.)
 
-        venue = Venue.objects.first()
-        total_price = venue.base_price + (guest_count * venue.extra_guest_price)
+        # Determine if it's a venue or another service
+        if service_type == "venue":
+            service = get_object_or_404(Venue, id=service_id)
+        else:
+            service = get_object_or_404(ServiceListing, id=service_id)
+
+        # Calculate total price
+        total_price = service.base_price + (guest_count * service.extra_guest_price)
 
         for amenity in selected_amenities:
-            if amenity in venue.amenities_price:
-                total_price += venue.amenities_price[amenity]
+            if amenity in service.amenities_price:
+                total_price += service.amenities_price[amenity]
 
         return JsonResponse({"total_price": total_price})
-
 
 def photography(request):
     return render(request, 'Wedding/photography.html')

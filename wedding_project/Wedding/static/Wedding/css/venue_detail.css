@@ -1,0 +1,104 @@
+/* General Styling */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+/* Container Styling */
+.container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Venue Title */
+h2 {
+    text-align: center;
+    color: #5a2d82;
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+/* Venue Image */
+img.img-fluid {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+/* Details Styling */
+p {
+    font-size: 16px;
+    color: #444;
+    margin-bottom: 10px;
+}
+
+/* Labels */
+label {
+    font-weight: 600;
+    display: block;
+    margin-top: 15px;
+}
+
+/* Input Fields */
+input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Amenities Checkboxes */
+.amenity-checkbox {
+    margin-right: 8px;
+}
+
+/* Total Price Styling */
+h3 {
+    margin-top: 20px;
+    font-size: 22px;
+    color: #1d3557;
+}
+
+/* Request Pricing Button */
+.btn-primary {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: #5a2d82;
+    color: white;
+    text-align: center;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: none;
+    margin-top: 20px;
+    transition: 0.3s ease-in-out;
+}
+
+.btn-primary:hover {
+    background-color: #4a2370;
+    transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        max-width: 90%;
+        padding: 20px;
+    }
+    h2 {
+        font-size: 24px;
+    }
+    .btn-primary {
+        font-size: 16px;
+    }
+}

@@ -1,18 +1,18 @@
 {% extends 'base_generic.html' %}
 {% load static %}
 
-
 {% block content %}
-    <link rel="stylesheet" type="text/css" href="{% static 'Wedding/css/catering.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'Wedding/css/catering.css' %}">
+
 <div class="container">
     <!-- First Row: Catering Image & Details -->
     <div class="row catering-details">
         <div class="col-md-6">
-            <img src="{% static 'Wedding/images/caterpage.jpeg' %}" class="card-img-top" alt="Temple">
+            <img src="{% static 'Wedding/images/caterpage.jpeg' %}" class="card-img-top" alt="Catering Services">
         </div>
         <div class="col-md-6">
             <h2>Catering Services</h2>
-            <p>A wedding is a celebration of love, and great food makes it even more memorable! Our catering services bring you the finest cuisines, customized menus, and exceptional hospitality. Whether you want a grand feast, a traditional banquet, or an intimate gathering, we ensure that every dish delights your guests. Choose from our top-rated catering services and make your wedding a flavorful success!</p>
+            <p>A wedding is a celebration of love, and great food makes it even more memorable! Our catering services bring you the finest cuisines, customized menus, and exceptional hospitality. Whether you want a grand feast, a traditional banquet, or an intimate gathering, we ensure that every dish delights your guests.</p>
         </div>
     </div>
 
@@ -22,32 +22,31 @@
         <div class="col-md-3 filters">
             <h4>Filter Catering Services</h4>
             <form method="GET">
-                <label>City:</label>
-                <select name="city">
+                <label for="city">City:</label>
+                <select name="city" id="city" class="form-control">
                     <option value="">Select City</option>
                     <option value="Kathmandu">Kathmandu</option>
                     <option value="Bhaktapur">Bhaktapur</option>
                     <option value="Lalitpur">Lalitpur</option>
                 </select>
 
-                <label>Number of Guests:</label>
-                <input type="number" name="guests" min="10" placeholder="Guests">
+                <label for="guests">Number of Guests:</label>
+                <input type="number" name="guests" id="guests" min="10" class="form-control" placeholder="Guests">
 
-                <label>Amenities:</label>
+                <label>Amenities:</label><br>
                 <input type="checkbox" name="amenities" value="Vegetarian"> Vegetarian  
                 <input type="checkbox" name="amenities" value="Non-Vegetarian"> Non-Vegetarian  
 
-                <label>Price Range:</label>
-                <input type="number" name="min_price" placeholder="Min Price">
-                <input type="number" name="max_price" placeholder="Max Price">
+                <label for="min_price">Price Range:</label>
+                <input type="number" name="min_price" id="min_price" class="form-control" placeholder="Min Price">
+                <input type="number" name="max_price" id="max_price" class="form-control" placeholder="Max Price">
 
-                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                <button type="submit" class="btn btn-primary mt-2">Apply Filters</button>
             </form>
         </div>
 
         <!-- Catering Listings -->
         <div class="col-md-9 listings">
-            <!-- <h4>Available Catering Services</h4> -->
             {% for service in caterings %}
             <div class="listing-card">
                 {% if service.images %}
@@ -55,7 +54,6 @@
                 {% else %}
                     <img src="{% static 'Wedding/images/default_catering.jpg' %}" class="listing-img">
                 {% endif %}
-    
                 <h5>{{ service.service_type }}</h5>
                 <h5>{{ service.name }}</h5>
                 <h5>{{ service.description }}</h5>
@@ -63,9 +61,9 @@
                 <p>City: {{ service.city }} </p>
                 <p>Available: {{ service.availability }}</p>
                 <p>Amenities: {{ service.amenities }}</p>
-    
+
                 <a href="{% url 'catering_detail' service.id %}" class="btn btn-info">View Details</a>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestPricingModal">Request Pricing</button>
+                <button type="button" class="btn btn-primary request-pricing-btn" data-bs-toggle="modal" data-bs-target="#requestPricingModal" data-service-id="{{ service.id }}" data-service-name="{{ service.name }}">Request Pricing</button>
             </div>
             {% empty %}
             <p>No catering services available.</p>
@@ -74,25 +72,58 @@
     </div>
 </div>
 
-<!-- Request Pricing Form (Popup) -->
-<div id="requestPricingForm" class="popup-form">
-    <form method="POST" action="{% url 'request_pricing' %}">
-        {% csrf_token %}
-        <input type="hidden" name="service_id" id="serviceId">
-        <label>Name:</label>
-        <input type="text" name="name" required>
-
-        <label>Email:</label>
-        <input type="email" name="email" required>
-
-        <label>Event Date:</label>
-        <input type="date" name="event_date" required>
-
-        <label>Message:</label>
-        <textarea name="message"></textarea>
-
-        <button type="submit" class="btn btn-success">Send Request</button>
-        <button type="button" onclick="closeRequestForm()" class="btn btn-danger">Cancel</button>
-    </form>
+<!-- Request Pricing Modal -->
+<div class="modal fade" id="requestPricingModal" tabindex="-1" aria-labelledby="requestPricingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Request Pricing</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'request_pricing' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="service_name" value="{{ service.name }}"> 
+                    <input type="hidden" name="seller_email" value="{{ service.seller.email }}">  <!-- Get seller's email -->
+                
+                    <label>First Name:</label>
+                    <input type="text" name="first_name" required>
+                
+                    <label>Last Name:</label>
+                    <input type="text" name="last_name" required>
+                
+                    <label>Email:</label>
+                    <input type="email" name="email" required>
+                
+                    <label>Phone:</label>
+                    <input type="text" name="phone" required>
+                
+                    <label>Event Date:</label>
+                    <input type="date" name="event_date" required>
+                
+                    <label>Message:</label>
+                    <textarea name="message"></textarea>
+                
+                    <button type="submit">Send Request</button>
+                </form>
+                
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Script to populate modal with service details -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".request-pricing-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            document.getElementById("serviceId").value = this.getAttribute("data-service-id");
+            document.getElementById("name").value = this.getAttribute("data-service-name");
+        });
+    });
+});
+</script>
 {% endblock %}

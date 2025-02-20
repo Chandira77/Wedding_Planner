@@ -1,0 +1,65 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'Wedding/css/venue_detail.css' %}">
+
+<div class="container">
+    <h2>{{ venue.name }}</h2>
+    <img src="{{ venue.images.url }}" alt="Venue Image" class="img-fluid">
+    
+    <p><strong>Location:</strong> {{ venue.location }}</p>
+    <p><strong>Price:</strong> ${{ venue.price }}</p>
+    <p><strong>Description:</strong> {{ venue.description }}</p>
+    <p><strong>Base Price:</strong> ${{ venue.base_price }}</p>
+    <p><strong>Price per Extra Guest:</strong> ${{ venue.extra_guest_price }}</p>
+
+    <!-- Guest Selection -->
+    <label for="guests"><strong>Number of Guests:</strong></label>
+    <input type="number" id="guests" name="guests" value="0" min="0">
+
+    <!-- Amenities Selection -->
+    <h3>Select Amenities:</h3>
+    {% for amenity, price in venue.amenities_price.items %}
+        <label>
+            <input type="checkbox" name="amenities" value="{{ amenity }}" class="amenity-checkbox">
+            {{ amenity }} (+${{ price }})
+        </label><br>
+    {% endfor %}
+
+    <p><strong>Availability:</strong> {{ venue.availability }}</p>
+
+    <h3>Total Price: $<span id="total_price">{{ venue.base_price }}</span></h3>
+
+    <a href="#" class="btn btn-primary">Request Pricing</a>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$(document).ready(function(){
+    function updatePrice(){
+        let guests = $("#guests").val();
+        let amenities = [];
+        $(".amenity-checkbox:checked").each(function() {
+            amenities.push($(this).val());
+        });
+
+        $.ajax({
+            url: "{% url 'calculate_price' venue.id %}",
+            type: "POST",
+            data: {
+                'guests': guests,
+                'amenities': amenities,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response){
+                $("#total_price").text(response.total_price);
+            }
+        });
+    }
+
+    $("#guests, .amenity-checkbox").on("change", updatePrice);
+});
+</script>
+{% endblock %}

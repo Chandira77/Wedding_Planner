@@ -89,28 +89,37 @@
         <table border="1">
             <thead>
                 <tr>
-                    <th>Customer</th>
                     <th>Service</th>
-                    <th>Date</th>
+                    <th>Customer Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Event Date</th>
+                    <th>Message</th>
                     <th>Status</th>
-                    <th>Actions</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 {% for booking in bookings %}
                 <tr>
-                    <td>{{ booking.customer.username }}</td>
-                    <td>{{ booking.service }}</td>
-                    <td>{{ booking.created_at }}</td>
-                    <td>{{ booking.status }}</td>
+                    <td>{{ request.service_name }}</td>
+                    <td>{{ request.first_name }} {{ request.last_name }}</td>
+                    <td>{{ request.email }}</td>
+                    <td>{{ request.phone }}</td>
+                    <td>{{ request.event_date }}</td>
+                    <td>{{ request.message }}</td>
+                    <td>{{ request.status }}</td>
                     <td>
-                        <a href="{% url 'accept_booking' booking.id %}" class="btn btn-success">Accept</a>
-                        <a href="{% url 'reject_booking' booking.id %}" class="btn btn-danger">Reject</a>
+                        <form method="POST" action="{% url 'update_request_status' request.id %}">
+                            {% csrf_token %}
+                            <select name="status">
+                                <option value="Pending" {% if request.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                <option value="Approved" {% if request.status == 'Approved' %}selected{% endif %}>Approved</option>
+                                <option value="Rejected" {% if request.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                            </select>
+                            <button type="submit">Update</button>
+                        </form>
                     </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5">No booking requests yet.</td>
                 </tr>
                 {% endfor %}
             </tbody>

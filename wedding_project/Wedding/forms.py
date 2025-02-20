@@ -73,12 +73,16 @@ class PricingRequestForm(forms.ModelForm):
 
     class Meta:
         model = PricingRequest
-        fields = ['venue', 'first_name', 'last_name', 'email', 'phone', 'event_date', 'message']
+        fields = [
+            'service_name', 'seller_email', 'first_name', 'last_name',
+            'email', 'phone', 'event_date', 'message'
+        ]
         widgets = {
-            'venue': forms.Select(attrs={"class": "form-control"}),
+            'service_name': forms.TextInput(attrs={"class": "form-control", "placeholder": "Service Name"}),
+            'seller_email': forms.EmailInput(attrs={"class": "form-control", "placeholder": "Seller Email"}),
             'first_name': forms.TextInput(attrs={"class": "form-control", "placeholder": "First Name"}),
             'last_name': forms.TextInput(attrs={"class": "form-control", "placeholder": "Last Name"}),
-            'email': forms.EmailInput(attrs={"class": "form-control", "placeholder": "Email"}),
+            'email': forms.EmailInput(attrs={"class": "form-control", "placeholder": "Your Email"}),
             'phone': forms.TextInput(attrs={"class": "form-control", "placeholder": "Phone Number"}),
             'message': forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Your message..."}),
         }
