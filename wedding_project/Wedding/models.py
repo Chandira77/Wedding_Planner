@@ -112,8 +112,14 @@ class SellerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     business_name = models.CharField(max_length=255)
     phone = models.CharField(max_length=15)
+    location = models.CharField(max_length=200, blank=True, null=True)  # New field
     profile_image = models.ImageField(upload_to='seller_profiles/', default='default.jpg')
+    description = models.TextField(blank=True, null=True)  # New field
+    services = models.TextField(blank=True, null=True)  # New field
+    website = models.URLField(blank=True, null=True)  # New field
+    average_rating = models.FloatField(default=0.0)  # New field
     is_seller = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)  # New field
 
     def __str__(self):
         return self.business_name

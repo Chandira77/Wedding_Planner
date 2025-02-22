@@ -1,1 +1,40 @@
-<a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+{% extends 'base_generic.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'Wedding/css/index.css' %}">
+<div class="container mt-5">
+    <h2 class="text-center">{{ seller_profile.business_name }}'s Profile</h2>
+
+    <div class="card shadow-lg p-4 mt-4">
+        <div class="row">
+            <!-- Profile Image -->
+            <div class="col-md-4 text-center">
+                {% if seller_profile.profile_image %}
+                    <img src="{{ seller_profile.profile_image.url }}" class="img-fluid rounded-circle" width="200">
+                {% else %}
+                    <img src="/static/images/default.jpg" class="img-fluid rounded-circle" width="200">
+                {% endif %}
+            </div>
+
+            <!-- Profile Details -->
+            <div class="col-md-8">
+                <p><strong>Business Name:</strong> {{ seller_profile.business_name }}</p>
+                <p><strong>Phone:</strong> {{ seller_profile.phone }}</p>
+                {% if seller_profile.location %}
+                    <p><strong>Location:</strong> {{ seller_profile.location }}</p>
+                {% endif %}
+                {% if seller_profile.description %}
+                    <p><strong>Description:</strong> {{ seller_profile.description }}</p>
+                {% endif %}
+                {% if seller_profile.website %}
+                    <p><strong>Website:</strong> <a href="{{ seller_profile.website }}" target="_blank">{{ seller_profile.website }}</a></p>
+                {% endif %}
+                
+                <!-- Edit Profile Button -->
+                <a href="{% url 'edit_seller_profile' %}" class="btn btn-primary">Edit Profile</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

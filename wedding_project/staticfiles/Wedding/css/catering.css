@@ -1,0 +1,101 @@
+/* General styling */
+body{
+    background-color: #fff5e6; /* Light peach - wedding theme */
+    font-family: 'Poppins', sans-serif;
+
+}
+.container {
+    margin-top: 20px;
+    
+}
+
+/* Catering image and details */
+.catering-details {
+    margin-bottom: 20px;
+}
+
+.catering-details img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+/* Filters section */
+.filters {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.filters form label {
+    display: block;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.filters form input,
+.filters form select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.filters .btn {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* Listings Section (Modified to Two Columns) */
+.listings h4 {
+    margin-bottom: 15px;
+}
+
+.listings {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.listing-card {
+    flex: 1 1 calc(50% - 10px); /* Two columns */
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.listing-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.listing-card h5 {
+    margin-top: 10px;
+    font-size: 18px;
+    color: #333;
+}
+
+.listing-card p {
+    font-size: 14px;
+    color: #555;
+}
+
+.listing-card .btn {
+    margin-top: 10px;
+    width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .listings {
+        flex-direction: column;
+    }
+    .listing-card {
+        flex: 1 1 100%;
+    }
+}

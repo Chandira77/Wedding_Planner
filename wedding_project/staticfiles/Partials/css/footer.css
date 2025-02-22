@@ -1,106 +1,164 @@
-/* Footer Styling */
-footer {
-    background-color: gray;
-    color: white;
-    padding: 40px 0;
-    text-align: center;
+/* Global Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
 }
 
-/* Footer Container */
-footer .container {
-    max-width: 1100px;
+.container {
+    max-width: 1200px;
     margin: auto;
+    padding: 20px;
 }
 
-/* Footer Sections */
-footer .row {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 20px;
+/* Filter Section */
+#apply_filter {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Footer Columns */
-footer .col-md-4 {
-    flex: 1;
-    min-width: 280px;
-}
-
-/* Footer Headings */
-footer h4 {
-    font-size: 1.5rem;
+#apply_filter h3 {
+    color: #d63384;
     margin-bottom: 15px;
     font-weight: 600;
 }
 
-/* Footer Paragraphs and Links */
-footer p, footer a {
-    font-size: 1rem;
-    color: #bbb;
-    text-decoration: none;
+#apply_filter label {
+    display: block;
+    font-weight: 500;
+    margin-top: 10px;
 }
 
-/* Quick Links */
-.quick-links ul {
+#apply_filter .form-control {
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.btn-primary {
+    background-color: #d63384;
+    border: none;
+    padding: 10px;
+    font-weight: 500;
+    border-radius: 5px;
+}
+
+.btn-primary:hover {
+    background-color: #b52d6e;
+}
+
+/* Venue Listings */
+.venue-item {
+    background: black;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s ease;
+}
+
+.venue-item:hover {
+    transform: scale(1.02);
+}
+
+.venue-img {
+    width: 180px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 20px;
+}
+
+.venue-details h4 {
+    color: #d63384;
+    font-weight: 600;
+}
+
+.venue-details p {
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+/* Pagination */
+.pagination {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.pagination a {
+    padding: 8px 15px;
+    margin: 0 5px;
+    background: #d63384;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.pagination a:hover {
+    background: #b52d6e;
+}
+
+/* Footer Styles */
+footer {
+    background: #222;
+    color: #fff;
+    padding: 40px 0;
+    text-align: center;
+}
+
+footer h4 {
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #d63384;
+}
+
+footer ul {
     list-style: none;
     padding: 0;
 }
 
-.quick-links ul li {
-    margin-bottom: 8px;
+footer ul li {
+    margin: 5px 0;
 }
 
-.quick-links ul li a:hover {
-    color: #ff6f61;
-}
-
-/* Social Media Links */
-.social-media a {
-    display: inline-block;
-    color: #ff6f61;
-    margin: 5px;
-    font-size: 1.2rem;
+footer ul li a {
+    color: black;
+    text-decoration: none;
     transition: color 0.3s;
 }
 
-.social-media a:hover {
-    color: #e35d50;
+footer ul li a:hover {
+    color: #d63384;
 }
 
-/* Newsletter Section */
-.newsletter {
-    margin-top: 30px;
-    text-align: center;
+.social-media a {
+    color: #d63384;
+    text-decoration: none;
+    margin-right: 10px;
+    font-size: 16px;
 }
 
 .newsletter input {
-    width: 80%;
+    width: 60%;
     padding: 10px;
-    border-radius: 8px;
-    border: none;
-    outline: none;
+    border-radius: 5px;
+    border: 1px solid #ccc;
 }
 
 .newsletter button {
-    background-color: #ff6f61;
-    color: white;
+    background: #d63384;
     border: none;
     padding: 10px 15px;
-    border-radius: 8px;
-    font-weight: bold;
+    color: #fff;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background 0.3s;
 }
 
 .newsletter button:hover {
-    background-color: #e35d50;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    footer .row {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
+    background: #b52d6e;
 }

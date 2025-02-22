@@ -1,6 +1,7 @@
 {% extends 'base_generic.html' %}
 {% load static %}
 {% block content %}
+<link rel="stylesheet" href="{% static 'Wedding/css/edit_seller_profile.css' %}">
 <h2>Edit Seller Profile</h2>
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}

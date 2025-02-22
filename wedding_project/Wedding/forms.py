@@ -58,11 +58,15 @@ class ServiceListingForm(forms.ModelForm):
 class SellerProfileForm(forms.ModelForm):
     class Meta:
         model = SellerProfile
-        fields = ['business_name', 'phone', 'profile_image']
+        fields = ['business_name', 'phone', 'profile_image', 'location', 'description', 'services', 'website']
         widgets = {
             'business_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter business name'}),
             'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter phone number'}),
             'profile_image': forms.FileInput(attrs={'class': 'form-control'}),
+            'location': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter location'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Write about your business'}),
+            'services': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'List your services'}),
+            'website': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Enter website URL (optional)'}),
         }
 
 

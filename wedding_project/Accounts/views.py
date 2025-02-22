@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import Profile
+from Wedding.models import SellerProfile
 from django.contrib.auth.decorators import login_required
 from .forms import SignupForm, LoginForm
 from django.contrib.auth import get_user_model, authenticate, login, logout
@@ -114,4 +115,5 @@ def logout_view(request):
 
 @login_required
 def profile_view(request):
-    return render(request, "Authentication/profile.html")
+    seller_profile = get_object_or_404(SellerProfile, user=request.user)  # Fetch current seller's profile
+    return render(request, "Authentication/profile.html", {"seller_profile": seller_profile})
