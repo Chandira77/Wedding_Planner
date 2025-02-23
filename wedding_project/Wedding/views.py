@@ -9,11 +9,12 @@ from .forms import VenueForm, ServiceListingForm, SellerProfileForm
 from django.core.paginator import Paginator
 from django.db.models import Q, Sum, Count, Prefetch
 from django import forms
-from .models import Venue, ServiceListing, SellerProfile, Booking, Review, SellerEarnings, PricingRequest
+from .models import Venue, ServiceListing, SellerProfile, Booking, Review, SellerEarnings, PricingRequest, Event, Guest
 import json
 from django.urls import reverse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from .forms import EventForm, GuestForm
 
 def index(request):
     venues = Venue.objects.all() 
@@ -545,8 +546,60 @@ def contact(request):
     return render(request, 'Wedding/contact.html')
 
 # Actor Pages
-def user_page(request):
-    return render(request, 'Wedding/user.html')
+
+
+@login_required
+def user_dashboard(request):
+    events = Event.objects.filter(user=request.user)
+    return render(request, 'dashboard/user_dashboard.html', {'events': events})
+
+# 🎯 CREATE EVENT
+@login_required
+def Create_event(request):
+    form = EventForm()
+    print("DEBUG: Form fields:", form.fields)  # ✅ Debugging
+
+    return render(request, 'dashboard/create_event.html', {'form': form})
+
+
+# 🎯 ADD GUESTS TO EVENT
+@login_required
+def guest_list(request, event_id):
+    event = get_object_or_404(Event, id=event_id, user=request.user)
+    guests = event.guests.all()
+
+    if request.method == 'POST':
+        form = GuestForm(request.POST)
+        if form.is_valid():
+            guest = form.save(commit=False)
+            guest.event = event
+            guest.save()
+            return redirect('guest_list', event_id=event.id)
+    else:
+        form = GuestForm()
+
+    return render(request, 'wedding/guest_list.html', {'event': event, 'guests': guests, 'form': form})
+
+# 🎯 SEND INVITATION EMAIL
+@login_required
+def send_invitation(request, guest_id):
+    guest = get_object_or_404(Guest, id=guest_id)
+    event = guest.event
+    subject = f"You're Invited to {event.name}!"
+    rsvp_link = f"http://127.0.0.1:8000/rsvp/{guest.id}/"
+    message = f"Dear {guest.name},\n\nYou are invited to {event.name} on {event.date} at {event.venue}.\n\nPlease RSVP using this link: {rsvp_link}\n\nBest Regards,\n{event.user.username}"
+    
+    send_mail(subject, message, 'your_email@example.com', [guest.email])
+
+    return redirect('guest_list', event_id=event.id)
+
+# 🎯 RSVP RESPONSE (Accept or Decline)
+def rsvp_response(request, guest_id, response):
+    guest = get_object_or_404(Guest, id=guest_id)
+    if response in ['Accepted', 'Declined']:
+        guest.rsvp_status = response
+        guest.save()
+    return render(request, 'wedding/rsvp_response.html', {'guest': guest})
 
 def admin_page(request):
     return render(request, 'Wedding/admin.html')

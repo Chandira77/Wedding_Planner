@@ -1,0 +1,15 @@
+<h2>Guests for {{ event.name }}</h2>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Add Guest</button>
+</form>
+
+<ul>
+  {% for guest in guests %}
+    <li>{{ guest.name }} - {{ guest.email }} - RSVP: {{ guest.rsvp_status }}
+      <a href="{% url 'send_invitation' guest.id %}">Send Invitation</a>
+    </li>
+  {% endfor %}
+</ul>
+<a href="{% url 'user_dashboard' %}">Back to Dashboard</a>

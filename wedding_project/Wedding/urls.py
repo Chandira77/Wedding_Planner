@@ -32,7 +32,15 @@ urlpatterns = [
     path('contact/', views.contact, name='contact'),
     
     # Actor Pages
-    path('actor/user/', views.user_page, name='user_page'),
+    path('actor/user/', views.user_dashboard, name='user_dashboard'),
+    path('create_event/', views.Create_event, name='Create_event'),
+    path('event/<int:event_id>/guests/', views.guest_list, name='guest_list'),
+    path('send_invitation/<int:guest_id>/', views.send_invitation, name='send_invitation'),
+    path('rsvp/<int:guest_id>/<str:response>/', views.rsvp_response, name='rsvp_response'),
+
+
+
+
     path('actor/admin/', views.admin_page, name='admin_page'),
     path('actor/guest/', views.guest_page, name='guest_page'),
     path('actor/seller/', views.sellerdashboard, name='sellerdashboard'),

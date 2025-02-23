@@ -1,6 +1,6 @@
 from django import forms
 import json
-from .models import Venue, ServiceListing, PricingRequest, SellerProfile
+from .models import Venue, ServiceListing, PricingRequest, SellerProfile, Event, Guest
 
 class VenueForm(forms.ModelForm):
     status = forms.ChoiceField(
@@ -90,3 +90,16 @@ class PricingRequestForm(forms.ModelForm):
             'phone': forms.TextInput(attrs={"class": "form-control", "placeholder": "Phone Number"}),
             'message': forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Your message..."}),
         }
+
+
+
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ['name', 'date', 'venue']
+
+class GuestForm(forms.ModelForm):
+    class Meta:
+        model = Guest
+        fields = ['name', 'email', 'phone']

@@ -154,3 +154,27 @@ class SellerEarnings(models.Model):
 
     def __str__(self):
         return f"{self.seller.username} Earnings"
+    
+
+
+
+
+class Event(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # The event creator
+    name = models.CharField(max_length=255)
+    date = models.DateField()
+    venue = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+class Guest(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="guests")
+    name = models.CharField(max_length=255)
+    email = models.EmailField()
+    phone = models.CharField(max_length=15, blank=True, null=True)
+    RSVP_CHOICES = [('Pending', 'Pending'), ('Accepted', 'Accepted'), ('Declined', 'Declined')]
+    rsvp_status = models.CharField(max_length=10, choices=RSVP_CHOICES, default='Pending')
+
+    def __str__(self):
+        return f"{self.name} - {self.event.name}"

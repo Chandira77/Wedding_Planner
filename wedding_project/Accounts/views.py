@@ -28,7 +28,7 @@ def login_view(request):
 
             # Redirect based on role
             if profile.role == 'user':
-                return redirect('user_page')
+                return redirect('user_dashboard')
             elif profile.role == 'seller':
                 return redirect('sellerdashboard')
             elif profile.role == 'admin':

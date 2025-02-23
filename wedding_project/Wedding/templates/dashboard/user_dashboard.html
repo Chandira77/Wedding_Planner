@@ -1,0 +1,35 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+<h2>My Events</h2>
+
+<!-- Button to create a new event -->
+<a href="{% url 'Create_event' %}" class="btn btn-primary">+ Create New Event</a>
+
+<!-- Display user's events -->
+{% if events %}
+    <table border="1">
+        <tr>
+            <th>Event Name</th>
+            <th>Date</th>
+            <th>Venue</th>
+            <th>Guests</th>
+            <th>Actions</th>
+        </tr>
+        {% for event in events %}
+        <tr>
+            <td>{{ event.name }}</td>
+            <td>{{ event.date }}</td>
+            <td>{{ event.venue }}</td>
+            <td>{{ event.guests.count }}</td>
+            <td>
+                <a href="{% url 'guest_list' event.id %}" class="btn btn-info">Manage Guests</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>No events created yet. <a href="{% url 'Create_event' %}">Create one now</a>!</p>
+{% endif %}
+
+{% endblock %}
