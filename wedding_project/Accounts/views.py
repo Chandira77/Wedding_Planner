@@ -6,9 +6,10 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import Profile
-from Wedding.models import SellerProfile
+from Wedding.models import SellerProfile, UserProfile
 from django.contrib.auth.decorators import login_required
-from .forms import SignupForm, LoginForm
+from Accounts.forms import SignupForm, LoginForm
+from Wedding.forms import UserProfileForm, SellerProfileForm
 from django.contrib.auth import get_user_model, authenticate, login, logout
 
 # wedding/views.py
@@ -113,7 +114,36 @@ def logout_view(request):
     return redirect('login')  # Redirects to login page after logout
 
 
+# @login_required
+# def profile_view(request):
+#     seller_profile = get_object_or_404(SellerProfile, user=request.user)  # Fetch current seller's profile
+#     return render(request, "Authentication/profile.html", {"seller_profile": seller_profile})
+
 @login_required
 def profile_view(request):
-    seller_profile = get_object_or_404(SellerProfile, user=request.user)  # Fetch current seller's profile
-    return render(request, "Authentication/profile.html", {"seller_profile": seller_profile})
+    if hasattr(request.user, 'sellerprofile'):  # Seller ho vane
+        seller_profile = get_object_or_404(SellerProfile, user=request.user)
+        return render(request, "Authentication/profile.html", {"seller_profile": seller_profile})
+
+    elif hasattr(request.user, 'userprofile'):  # User ho vane
+        user_profile = get_object_or_404(UserProfile, user=request.user)
+        return render(request, "Authentication/profile.html", {"user_profile": user_profile})
+
+    else:
+        return redirect("index")
+    
+
+
+@login_required
+def edit_profile(request):
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        form = UserProfileForm(request.POST, request.FILES, instance=user_profile)
+        if form.is_valid():
+            form.save()
+            return redirect("profile")  # Redirect to profile after saving
+    else:
+        form = UserProfileForm(instance=user_profile)
+
+    return render(request, "Authentication/edit_profile.html", {"form": form})

@@ -1,0 +1,11 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+<h2>Send Invitation</h2>
+<p>Are you sure you want to invite {{ guest.name }}?</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-success">Send Invitation</button>
+    <a href="{% url 'guest_list' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

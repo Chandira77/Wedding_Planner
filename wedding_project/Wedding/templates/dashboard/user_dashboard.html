@@ -26,7 +26,9 @@
                 <div class="card-body text-center">
                     <h5 class="card-title">RSVP & Invitations</h5>
                     <p class="card-text">Send digital invitations & track responses.</p>
-                    <a href="{% url 'send_rsvp' %}" class="btn btn-primary">Send Invitations</a>
+                    {% for guest in guests %}
+                        <a href="{% url 'send_invitation' guest.id %}" class="btn btn-primary">Send Invitation to {{ guest.name }}</a>
+                    {% endfor %}
                 </div>
             </div>
         </div>

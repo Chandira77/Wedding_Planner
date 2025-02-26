@@ -1,0 +1,16 @@
+{% extends 'base_generic.html' %}
+
+{% block title %}Confirm Delete{% endblock %}
+
+{% block content %}
+<div class="container text-center mt-5">
+    <h2>Are you sure you want to delete {{ guest.name }}?</h2>
+    <p>This action cannot be undone.</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <a href="{% url 'guest_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

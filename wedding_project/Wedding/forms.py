@@ -1,6 +1,6 @@
 from django import forms
 import json
-from .models import Venue, ServiceListing, PricingRequest, SellerProfile, Guest
+from .models import Venue, ServiceListing, PricingRequest, SellerProfile, UserProfile, Guest, RSVP
 
 class VenueForm(forms.ModelForm):
     status = forms.ChoiceField(
@@ -93,6 +93,12 @@ class PricingRequestForm(forms.ModelForm):
 
 
 
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['full_name', 'phone', 'address', 'profile_picture']
+
+
 
 # class EventForm(forms.ModelForm):
 #     class Meta:
@@ -102,4 +108,18 @@ class PricingRequestForm(forms.ModelForm):
 class GuestForm(forms.ModelForm):
     class Meta:
         model = Guest
-        fields = ['name', 'email', 'phone', 'category', 'assigned_side']
+        fields = ['name', 'email', 'phone', 'category', 'assigned_side', 'is_invited']
+        widgets = {
+            'is_invited': forms.CheckboxInput(attrs={'class': 'form-check-input'})
+        }
+
+
+
+class RSVPForm(forms.ModelForm):
+    class Meta:
+        model = RSVP
+        fields = ['response', 'message']
+        widgets = {
+            'response': forms.Select(attrs={'class': 'form-control'}),
+            'message': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }

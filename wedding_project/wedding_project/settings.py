@@ -146,7 +146,7 @@ DEFAULT_FROM_EMAIL = 'inachand920@gmail.com'
 
 LOGIN_REDIRECT_URL = '/seller/seller_dashboard/' 
 LOGIN_REDIRECT_URL = '/login_success/'
-
+LOGIN_REDIRECT_URL = '/user_dashboard/'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

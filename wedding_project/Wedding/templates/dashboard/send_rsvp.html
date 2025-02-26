@@ -1,9 +1,0 @@
-{% extends 'base_generic.html' %}
-{% block content %}
-<h2>Send Invitations & RSVP Tracking</h2>
-<ul>
-    {% for guest in guests %}
-    <li>{{ guest.name }} - RSVP: {{ guest.rsvp.response }}</li>
-    {% endfor %}
-</ul>
-{% endblock %}

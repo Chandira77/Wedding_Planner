@@ -5,11 +5,11 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from .forms import VenueForm, ServiceListingForm, SellerProfileForm, GuestForm
+from .forms import VenueForm, ServiceListingForm, SellerProfileForm, GuestForm, RSVPForm
 from django.core.paginator import Paginator
 from django.db.models import Q, Sum, Count, Prefetch
 from django import forms
-from .models import Venue, ServiceListing, SellerProfile, Booking, Review, SellerEarnings, PricingRequest, Guest, Seating, DietaryPreference, CheckIn
+from .models import Venue, ServiceListing, SellerProfile, Booking, Review, SellerEarnings, PricingRequest, Guest, RSVP, Seating, DietaryPreference, CheckIn
 import json
 from django.urls import reverse
 from django.http import JsonResponse
@@ -575,7 +575,7 @@ def add_guest(request):
             return redirect('guest_list')
     else:
         form = GuestForm()
-    return render(request, 'add_guest.html', {'form': form})
+    return render(request, 'dashboard/add_guest.html', {'form': form})
 
 # Edit guest details
 def edit_guest(request, guest_id):
@@ -587,7 +587,7 @@ def edit_guest(request, guest_id):
             return redirect('guest_list')
     else:
         form = GuestForm(instance=guest)
-    return render(request, 'edit_guest.html', {'form': form, 'guest': guest})
+    return render(request, 'dashboard/edit_guest.html', {'form': form, 'guest': guest})
 
 # Delete guest
 def delete_guest(request, guest_id):
@@ -595,13 +595,36 @@ def delete_guest(request, guest_id):
     if request.method == "POST":
         guest.delete()
         return redirect('guest_list')
-    return render(request, 'guest_confirm_delete.html', {'guest': guest})
+    return render(request, 'dashboard/guest_confirm_delete.html', {'guest': guest})
 
 # 🎯 SEND INVITATION EMAIL
 @login_required
-def send_rsvp(request):
-    guests = Guest.objects.all()
-    return render(request, 'dashboard/send_rsvp.html', {'guests': guests})
+def send_invitation(request, guest_id):
+    guest = get_object_or_404(Guest, id=guest_id)
+
+    if guest.is_invited:
+        messages.warning(request, f"Invitation already sent to {guest.name}.")
+    else:
+
+        user = request.user
+        from_email = user.email
+
+        # Send email logic
+        send_mail(
+            subject="Wedding Invitation",
+            message=f"Dear {guest.name},\n\nYou are invited to our wedding! Please RSVP using this link: {request.build_absolute_uri(reverse('rsvp_response', args=[guest.id]))}",
+            from_email=from_email,
+            recipient_list=[guest.email],
+            fail_silently=False,
+        )
+
+        # Mark invitation as sent
+        guest.is_invited = True
+        guest.save()
+
+        messages.success(request, f"Invitation sent to {guest.name} successfully!")
+
+    return redirect('guest_list')
 
 
 
@@ -625,12 +648,20 @@ def guest_check_in(request):
 
 
 # 🎯 RSVP RESPONSE (Accept or Decline)
-def rsvp_response(request, guest_id, response):
+def rsvp_response(request, guest_id):
     guest = get_object_or_404(Guest, id=guest_id)
-    if response in ['Accepted', 'Declined']:
-        guest.rsvp_status = response
-        guest.save()
-    return render(request, 'dashboard/rsvp_response.html', {'guest': guest})
+
+    if request.method == "POST":
+        form = RSVPForm(request.POST)
+        if form.is_valid():
+            rsvp, created = RSVP.objects.get_or_create(guest=guest)
+            rsvp.response = form.cleaned_data['response']
+            rsvp.save()
+            return redirect('dashboard/guest_list.html')
+    else:
+        form = RSVPForm()
+
+    return render(request, 'dashboard/rsvp_response.html', {'form': form, 'guest': guest})
 
 def admin_page(request):
     return render(request, 'Wedding/admin.html')

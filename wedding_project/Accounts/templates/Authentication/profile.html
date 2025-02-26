@@ -2,7 +2,11 @@
 {% load static %}
 {% block content %}
 <link rel="stylesheet" type="text/css" href="{% static 'Wedding/css/index.css' %}">
+
 <div class="container mt-5">
+    
+    {% if seller_profile %}
+    <!-- Seller Profile Section -->
     <h2 class="text-center">{{ seller_profile.business_name }}'s Profile</h2>
 
     <div class="card shadow-lg p-4 mt-4">
@@ -12,7 +16,7 @@
                 {% if seller_profile.profile_image %}
                     <img src="{{ seller_profile.profile_image.url }}" class="img-fluid rounded-circle" width="200">
                 {% else %}
-                    <img src="/static/images/default.jpg" class="img-fluid rounded-circle" width="200">
+                    <img src="{% static 'images/default.jpg' %}" class="img-fluid rounded-circle" width="200">
                 {% endif %}
             </div>
 
@@ -35,6 +39,43 @@
             </div>
         </div>
     </div>
+
+    {% elif user_profile %}
+    <!-- User Profile Section -->
+    <h2 class="text-center">{{ user_profile.full_name }}'s Profile</h2>
+
+    <div class="card shadow-lg p-4 mt-4">
+        <div class="row">
+            <!-- Profile Image -->
+            <div class="col-md-4 text-center">
+                {% if user_profile.profile_picture %}
+                    <img src="{{ user_profile.profile_picture.url }}" class="img-fluid rounded-circle" width="200">
+                {% else %}
+                    <img src="{% static 'images/default.jpg' %}" class="img-fluid rounded-circle" width="200">
+                {% endif %}
+            </div>
+
+            <!-- Profile Details -->
+            <div class="col-md-8">
+                <p><strong>Full Name:</strong> {{ user_profile.full_name }}</p>
+                <p><strong>Email:</strong> {{ user_profile.user.email }}</p>
+                {% if user_profile.phone %}
+                    <p><strong>Phone:</strong> {{ user_profile.phone }}</p>
+                {% endif %}
+                {% if user_profile.address %}
+                    <p><strong>Address:</strong> {{ user_profile.address }}</p>
+                {% endif %}
+                
+                <!-- Edit Profile Button -->
+                <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- No Profile Found Message -->
+    <p class="text-center text-danger">No profile found.</p>
+    {% endif %}
+
 </div>
 {% endblock %}
-

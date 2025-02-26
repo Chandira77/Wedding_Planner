@@ -1,0 +1,16 @@
+{% extends 'base_generic.html' %}
+
+{% block title %}Add Guest{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Add Guest</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Save</button>
+        <a href="{% url 'guest_list' %}" class="btn btn-secondary">Back</a>
+    </form>
+</div>
+{% endblock %}

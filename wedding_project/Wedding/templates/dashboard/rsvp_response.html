@@ -1,2 +1,12 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+<h2>RSVP for {{ guest.name }}</h2>
 <h2>RSVP Response</h2>
 <p>Thank you, {{ guest.name }}. Your RSVP status is now: <strong>{{ guest.rsvp_status }}</strong></p>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <a href="{% url 'guest_list' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}
