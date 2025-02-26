@@ -5,16 +5,15 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from .forms import VenueForm, ServiceListingForm, SellerProfileForm
+from .forms import VenueForm, ServiceListingForm, SellerProfileForm, GuestForm
 from django.core.paginator import Paginator
 from django.db.models import Q, Sum, Count, Prefetch
 from django import forms
-from .models import Venue, ServiceListing, SellerProfile, Booking, Review, SellerEarnings, PricingRequest, Event, Guest
+from .models import Venue, ServiceListing, SellerProfile, Booking, Review, SellerEarnings, PricingRequest, Guest, Seating, DietaryPreference, CheckIn
 import json
 from django.urls import reverse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .forms import EventForm, GuestForm
 
 def index(request):
     venues = Venue.objects.all() 
@@ -550,48 +549,80 @@ def contact(request):
 
 @login_required
 def user_dashboard(request):
-    events = Event.objects.filter(user=request.user)
-    return render(request, 'dashboard/user_dashboard.html', {'events': events})
+    return render(request, 'dashboard/user_dashboard.html')
 
-# 🎯 CREATE EVENT
+
+
+
+
 @login_required
-def Create_event(request):
-    form = EventForm()
-    print("DEBUG: Form fields:", form.fields)  # ✅ Debugging
+def guest_list(request):
+    guest_objects = Guest.objects.all()  # Fetch all guests
+    paginator = Paginator(guest_objects, 5)  # Show 5 guests per page
+    page_number = request.GET.get('page')
+    guests = paginator.get_page(page_number)
+    
+    return render(request, 'dashboard/guest_list.html', {'guests': guests})
 
-    return render(request, 'dashboard/create_event.html', {'form': form})
 
 
-# 🎯 ADD GUESTS TO EVENT
-@login_required
-def guest_list(request, event_id):
-    event = get_object_or_404(Event, id=event_id, user=request.user)
-    guests = event.guests.all()
-
-    if request.method == 'POST':
+# Add a new guest
+def add_guest(request):
+    if request.method == "POST":
         form = GuestForm(request.POST)
         if form.is_valid():
-            guest = form.save(commit=False)
-            guest.event = event
-            guest.save()
-            return redirect('guest_list', event_id=event.id)
+            form.save()
+            return redirect('guest_list')
     else:
         form = GuestForm()
+    return render(request, 'add_guest.html', {'form': form})
 
-    return render(request, 'wedding/guest_list.html', {'event': event, 'guests': guests, 'form': form})
+# Edit guest details
+def edit_guest(request, guest_id):
+    guest = get_object_or_404(Guest, id=guest_id)
+    if request.method == "POST":
+        form = GuestForm(request.POST, instance=guest)
+        if form.is_valid():
+            form.save()
+            return redirect('guest_list')
+    else:
+        form = GuestForm(instance=guest)
+    return render(request, 'edit_guest.html', {'form': form, 'guest': guest})
+
+# Delete guest
+def delete_guest(request, guest_id):
+    guest = get_object_or_404(Guest, id=guest_id)
+    if request.method == "POST":
+        guest.delete()
+        return redirect('guest_list')
+    return render(request, 'guest_confirm_delete.html', {'guest': guest})
 
 # 🎯 SEND INVITATION EMAIL
 @login_required
-def send_invitation(request, guest_id):
-    guest = get_object_or_404(Guest, id=guest_id)
-    event = guest.event
-    subject = f"You're Invited to {event.name}!"
-    rsvp_link = f"http://127.0.0.1:8000/rsvp/{guest.id}/"
-    message = f"Dear {guest.name},\n\nYou are invited to {event.name} on {event.date} at {event.venue}.\n\nPlease RSVP using this link: {rsvp_link}\n\nBest Regards,\n{event.user.username}"
-    
-    send_mail(subject, message, 'your_email@example.com', [guest.email])
+def send_rsvp(request):
+    guests = Guest.objects.all()
+    return render(request, 'dashboard/send_rsvp.html', {'guests': guests})
 
-    return redirect('guest_list', event_id=event.id)
+
+
+@login_required
+def seating_chart(request):
+    seatings = Seating.objects.all()
+    return render(request, 'dashboard/seating_chart.html', {'seatings': seatings})
+
+
+@login_required
+def dietary_preferences(request):
+    preferences = DietaryPreference.objects.all()
+    return render(request, 'dashboard/dietary_preferences.html', {'preferences': preferences})
+
+
+@login_required
+def guest_check_in(request):
+    checked_in_guests = CheckIn.objects.all()
+    return render(request, 'dashboard/guest_check_in.html', {'checked_in_guests': checked_in_guests})
+
+
 
 # 🎯 RSVP RESPONSE (Accept or Decline)
 def rsvp_response(request, guest_id, response):
@@ -599,7 +630,7 @@ def rsvp_response(request, guest_id, response):
     if response in ['Accepted', 'Declined']:
         guest.rsvp_status = response
         guest.save()
-    return render(request, 'wedding/rsvp_response.html', {'guest': guest})
+    return render(request, 'dashboard/rsvp_response.html', {'guest': guest})
 
 def admin_page(request):
     return render(request, 'Wedding/admin.html')

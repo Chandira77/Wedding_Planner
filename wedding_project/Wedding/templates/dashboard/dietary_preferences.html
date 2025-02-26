@@ -1,0 +1,9 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+<h2>Dietary Preferences</h2>
+<ul>
+    {% for pref in preferences %}
+    <li>{{ pref.guest.name }} - {{ pref.preference }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}

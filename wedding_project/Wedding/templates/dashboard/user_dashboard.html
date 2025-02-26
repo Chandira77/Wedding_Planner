@@ -1,35 +1,84 @@
 {% extends 'base_generic.html' %}
 
+{% block title %}User Dashboard{% endblock %}
+
 {% block content %}
-<h2>My Events</h2>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<div class="container">
+    <h2 class="text-center my-4">Welcome, {{ user.username }}!</h2>
 
-<!-- Button to create a new event -->
-<a href="{% url 'Create_event' %}" class="btn btn-primary">+ Create New Event</a>
+    <!-- Dashboard Cards -->
+    <div class="row">
+        <!-- Manage Guests -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Manage Guests</h5>
+                    <p class="card-text">Add, edit, and delete guest details.</p>
+                    <a href="{% url 'guest_list' %}" class="btn btn-primary">View Guests</a>
+                </div>
+            </div>
+        </div>
 
-<!-- Display user's events -->
-{% if events %}
-    <table border="1">
-        <tr>
-            <th>Event Name</th>
-            <th>Date</th>
-            <th>Venue</th>
-            <th>Guests</th>
-            <th>Actions</th>
-        </tr>
-        {% for event in events %}
-        <tr>
-            <td>{{ event.name }}</td>
-            <td>{{ event.date }}</td>
-            <td>{{ event.venue }}</td>
-            <td>{{ event.guests.count }}</td>
-            <td>
-                <a href="{% url 'guest_list' event.id %}" class="btn btn-info">Manage Guests</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-{% else %}
-    <p>No events created yet. <a href="{% url 'Create_event' %}">Create one now</a>!</p>
-{% endif %}
+        <!-- Send Invitations & RSVP Tracking -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">RSVP & Invitations</h5>
+                    <p class="card-text">Send digital invitations & track responses.</p>
+                    <a href="{% url 'send_rsvp' %}" class="btn btn-primary">Send Invitations</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seating Arrangement -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Seating Arrangement</h5>
+                    <p class="card-text">Assign guests to tables & optimize seating.</p>
+                    <a href="{% url 'seating_chart' %}" class="btn btn-primary">Manage Seating</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="row">
+        <!-- Dietary Preferences -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Dietary Preferences</h5>
+                    <p class="card-text">Track food preferences & special requests.</p>
+                    <a href="{% url 'dietary_preferences' %}" class="btn btn-primary">View Preferences</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Check-in & Attendance -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Check-in & Attendance</h5>
+                    <p class="card-text">Monitor guest check-ins using QR codes.</p>
+                    <a href="{% url 'guest_check_in' %}" class="btn btn-primary">Manage Check-ins</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logout -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Logout</h5>
+                    <p class="card-text">Securely log out from your dashboard.</p>
+                    <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

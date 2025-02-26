@@ -1,15 +1,88 @@
-<h2>Guests for {{ event.name }}</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Add Guest</button>
-</form>
+{% extends 'base_generic.html' %}
 
-<ul>
-  {% for guest in guests %}
-    <li>{{ guest.name }} - {{ guest.email }} - RSVP: {{ guest.rsvp_status }}
-      <a href="{% url 'send_invitation' guest.id %}">Send Invitation</a>
-    </li>
-  {% endfor %}
-</ul>
-<a href="{% url 'user_dashboard' %}">Back to Dashboard</a>
+{% block title %}Guest List{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Guest List</h2>
+
+    <!-- Search Bar -->
+    <div class="row mb-3">
+        <div class="col-md-6 offset-md-3">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search guests by name...">
+        </div>
+    </div>
+
+    <!-- Guest Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Category</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="guestTableBody">
+                {% for guest in guests %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ guest.name }}</td>
+                        <td>{{ guest.email }}</td>
+                        <td>{{ guest.category }}</td>
+                        <td>
+                          <a href="{% url 'edit_guest' guest.id %}">Edit</a> |
+                          <a href="{% url 'delete_guest' guest.id %}">Delete</a>
+                      </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">No guests found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    {% if guests.has_other_pages %}
+        <nav>
+            <ul class="pagination justify-content-center">
+                {% if guests.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ guests.previous_page_number }}">Previous</a></li>
+                {% endif %}
+
+                <li class="page-item disabled"><span class="page-link">Page {{ guests.number }} of {{ guests.paginator.num_pages }}</span></li>
+
+                {% if guests.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ guests.next_page_number }}">Next</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ guests.paginator.num_pages }}">Last</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+</div>
+
+<!-- JavaScript for Live Search -->
+<script>
+document.getElementById("searchInput").addEventListener("keyup", function() {
+    let filter = this.value.toLowerCase();
+    let rows = document.querySelectorAll("#guestTableBody tr");
+
+    rows.forEach(row => {
+        let name = row.cells[1].textContent.toLowerCase();
+        if (name.includes(filter)) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+});
+</script>
+
+{% endblock %}

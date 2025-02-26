@@ -33,10 +33,19 @@ urlpatterns = [
     
     # Actor Pages
     path('actor/user/', views.user_dashboard, name='user_dashboard'),
-    path('create_event/', views.Create_event, name='Create_event'),
-    path('event/<int:event_id>/guests/', views.guest_list, name='guest_list'),
-    path('send_invitation/<int:guest_id>/', views.send_invitation, name='send_invitation'),
-    path('rsvp/<int:guest_id>/<str:response>/', views.rsvp_response, name='rsvp_response'),
+    path('dashboard/guests/', views.guest_list, name='guest_list'),
+    path('dashboard/Addguests/', views.add_guest, name='add_guest'),
+    path('dashboard/guests/edit/<int:guest_id>/', views.edit_guest, name='edit_guest'),
+    path('dashboard/guests/delete/<int:guest_id>/', views.delete_guest, name='delete_guest'),
+    #path('guestconfirmation/', views.guest_confirmation, name='guest_confiramtion'),
+    path('dashboard/send-invites/', views.send_rsvp, name='send_rsvp'),
+    path('dashboard/seating/', views.seating_chart, name='seating_chart'),
+    path('dashboard/dietary/', views.dietary_preferences, name='dietary_preferences'),
+    path('dashboard/check-in/', views.guest_check_in, name='guest_check_in'),
+    #path('create_event/', views.create_event, name='create_event'),
+    #path('event/<int:event_id>/guests/', views.guest_list, name='guest_list'),
+    #path('send_invitation/<int:guest_id>/', views.send_invitation, name='send_invitation'),
+    #path('rsvp/<int:guest_id>/<str:response>/', views.rsvp_response, name='rsvp_response'),
 
 
 

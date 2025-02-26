@@ -1,0 +1,9 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+<h2>Seating Arrangement</h2>
+<ul>
+    {% for seat in seatings %}
+    <li>{{ seat.guest.name }} - Table: {{ seat.table_number }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}

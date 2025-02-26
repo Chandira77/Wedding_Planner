@@ -1,6 +1,6 @@
 from django import forms
 import json
-from .models import Venue, ServiceListing, PricingRequest, SellerProfile, Event, Guest
+from .models import Venue, ServiceListing, PricingRequest, SellerProfile, Guest
 
 class VenueForm(forms.ModelForm):
     status = forms.ChoiceField(
@@ -94,12 +94,12 @@ class PricingRequestForm(forms.ModelForm):
 
 
 
-class EventForm(forms.ModelForm):
-    class Meta:
-        model = Event
-        fields = ['name', 'date', 'venue']
+# class EventForm(forms.ModelForm):
+#     class Meta:
+#         model = Event
+#         fields = ['name', 'date', 'venue']
 
 class GuestForm(forms.ModelForm):
     class Meta:
         model = Guest
-        fields = ['name', 'email', 'phone']
+        fields = ['name', 'email', 'phone', 'category', 'assigned_side']

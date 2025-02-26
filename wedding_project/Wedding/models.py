@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.utils.timezone import now
 from datetime import date
 import json
-
+#from Wedding.models import Event
 
 
 class Venue(models.Model):
@@ -159,22 +159,55 @@ class SellerEarnings(models.Model):
 
 
 
-class Event(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # The event creator
-    name = models.CharField(max_length=255)
-    date = models.DateField()
-    venue = models.CharField(max_length=255)
+# class Event(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)  # The event creator
+#     name = models.CharField(max_length=255)
+#     date = models.DateField()
+#     venue = models.CharField(max_length=255)
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
 
 class Guest(models.Model):
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="guests")
+    #event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="guests")
     name = models.CharField(max_length=255)
     email = models.EmailField()
     phone = models.CharField(max_length=15, blank=True, null=True)
-    RSVP_CHOICES = [('Pending', 'Pending'), ('Accepted', 'Accepted'), ('Declined', 'Declined')]
-    rsvp_status = models.CharField(max_length=10, choices=RSVP_CHOICES, default='Pending')
+    category = models.CharField(
+        max_length=20,
+        choices=[('Family', 'Family'), ('Friends', 'Friends'), ('Colleagues', 'Colleagues'), ('VIP', 'VIP')]
+    )
+    assigned_side = models.CharField(max_length=10, choices=[('Bride', 'Bride'), ('Groom', 'Groom')])
 
     def __str__(self):
         return f"{self.name} - {self.event.name}"
+    
+
+
+class RSVP(models.Model):
+    guest = models.OneToOneField(Guest, on_delete=models.CASCADE)
+    response = models.CharField(
+        max_length=15,
+        choices=[('Attending', 'Attending'), ('Not Attending', 'Not Attending'), ('Maybe', 'Maybe')],
+        default='Maybe'
+    )
+
+
+
+class Seating(models.Model):
+    guest = models.ForeignKey(Guest, on_delete=models.CASCADE)
+    table_number = models.PositiveIntegerField()
+
+class DietaryPreference(models.Model):
+    guest = models.OneToOneField(Guest, on_delete=models.CASCADE)
+    preference = models.CharField(
+        max_length=20,
+        choices=[('Veg', 'Veg'), ('Non-Veg', 'Non-Veg'), ('Gluten-Free', 'Gluten-Free')],
+        default='Veg'
+    )
+    special_request = models.TextField(blank=True, null=True)
+
+
+class CheckIn(models.Model):
+    guest = models.OneToOneField(Guest, on_delete=models.CASCADE)
+    checked_in = models.BooleanField(default=False)

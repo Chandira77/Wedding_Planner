@@ -1,0 +1,9 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+<h2>Guest Check-in</h2>
+<ul>
+    {% for guest in checked_in_guests %}
+    <li>{{ guest.guest.name }} - Checked in: {{ guest.checked_in }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}
