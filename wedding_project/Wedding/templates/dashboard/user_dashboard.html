@@ -29,6 +29,7 @@
                     {% for guest in guests %}
                         <a href="{% url 'send_invitation' guest.id %}" class="btn btn-primary">Send Invitation to {{ guest.name }}</a>
                     {% endfor %}
+                    <a href="{% url 'generate_invitation_link' %}" class="btn btn-info">Generate Invitation Link</a>
                 </div>
             </div>
         </div>

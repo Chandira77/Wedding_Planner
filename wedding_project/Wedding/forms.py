@@ -1,6 +1,6 @@
 from django import forms
 import json
-from .models import Venue, ServiceListing, PricingRequest, SellerProfile, UserProfile, Guest, RSVP
+from .models import Venue, ServiceListing, PricingRequest, SellerProfile, UserProfile, Guest, RSVP, Event
 
 class VenueForm(forms.ModelForm):
     status = forms.ChoiceField(
@@ -108,14 +108,33 @@ class UserProfileForm(forms.ModelForm):
 class GuestForm(forms.ModelForm):
     class Meta:
         model = Guest
-        fields = ['name', 'email', 'phone', 'category', 'assigned_side', 'is_invited']
+        fields = ['event', 'name', 'email', 'phone', 'category', 'assigned_side', 'is_invited']
         widgets = {
-            'is_invited': forms.CheckboxInput(attrs={'class': 'form-check-input'})
+            'event': forms.Select(attrs={'class': 'form-control'}),  # Event selection dropdown
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-control'}),
+            'assigned_side': forms.Select(attrs={'class': 'form-control'}),
+            'is_invited': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
 
 
+
 class RSVPForm(forms.ModelForm):
+    class Meta:
+        model = RSVP
+        fields = ['event', 'guest', 'response', 'message']
+        widgets = {
+            'event': forms.Select(attrs={'class': 'form-control'}),  # Event selection dropdown
+            'guest': forms.Select(attrs={'class': 'form-control'}),  # Guest selection dropdown
+            'response': forms.Select(attrs={'class': 'form-control'}),
+            'message': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+
+
+class PublicRSVPForm(forms.ModelForm):
     class Meta:
         model = RSVP
         fields = ['response', 'message']
@@ -123,3 +142,21 @@ class RSVPForm(forms.ModelForm):
             'response': forms.Select(attrs={'class': 'form-control'}),
             'message': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
+    
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop('event', None)
+        guest = kwargs.pop('guest', None)
+        super().__init__(*args, **kwargs)
+        
+        if event:
+            self.fields['event'] = forms.ModelChoiceField(
+                queryset=Event.objects.filter(id=event.id),
+                initial=event,
+                widget=forms.HiddenInput()
+            )
+        if guest:
+            self.fields['guest'] = forms.ModelChoiceField(
+                queryset=Guest.objects.filter(id=guest.id),
+                initial=guest,
+                widget=forms.HiddenInput()
+            )

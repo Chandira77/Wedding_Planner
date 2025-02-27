@@ -178,8 +178,36 @@ class UserProfile(models.Model):
 #     def __str__(self):
 #         return self.name
 
+import uuid
+from django.db import models
+from django.urls import reverse
+
+class Event(models.Model):
+    name = models.CharField(max_length=255)
+    date = models.DateField()
+    time = models.TimeField()
+    venue = models.CharField(max_length=255)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    invite_link = models.CharField(max_length=255, blank=True, null=True)
+    unique_token = models.CharField(max_length=20, unique=True, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.unique_token:
+            self.unique_token = uuid.uuid4().hex[:10]
+            self.invite_link = f"/rsvp/{self.unique_token}/"
+        super().save(*args, **kwargs)
+
+    def get_invite_link(self):
+        return reverse('view_invitation', args=[self.unique_token])
+
+    def __str__(self):
+        return self.name
+
+
+
 class Guest(models.Model):
-    #event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="guests")
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=255)
     email = models.EmailField()
     phone = models.CharField(max_length=15, blank=True, null=True)
@@ -190,6 +218,7 @@ class Guest(models.Model):
     assigned_side = models.CharField(max_length=10, choices=[('Bride', 'Bride'), ('Groom', 'Groom')])
 
     is_invited = models.BooleanField(default=False)
+    is_attending = models.BooleanField(default=False)
 
 
 
@@ -199,16 +228,19 @@ class Guest(models.Model):
 
 
 class RSVP(models.Model):
-    guest = models.OneToOneField(Guest, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="rsvps")
+    guest = models.ForeignKey(Guest, on_delete=models.CASCADE, blank=True, null=True)  # Guest optional garna milcha
     response = models.CharField(
         max_length=15,
         choices=[('Attending', 'Attending'), ('Not Attending', 'Not Attending'), ('Maybe', 'Maybe')],
         default='Maybe'
     )
     message = models.TextField(blank=True, null=True)  # Optional message from the guest
+    submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"RSVP - {self.guest.name}: {self.response}"
+        return f"RSVP - {self.event.name}: {self.response}"
+
 
 
 

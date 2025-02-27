@@ -1,0 +1,25 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Generated Invitation Link</h2>
+    <p>Share this link with your guests to invite them:</p>
+    
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" id="invitationLink" value="{{ invitation_link }}" readonly>
+        <button class="btn btn-primary" onclick="copyLink()">Copy</button>
+    </div>
+    
+    <a href="{% url 'user_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+</div>
+
+<script>
+function copyLink() {
+    var copyText = document.getElementById("invitationLink");
+    copyText.select();
+    document.execCommand("copy");
+    alert("Copied the link: " + copyText.value);
+}
+</script>
+
+{% endblock %}

@@ -40,6 +40,7 @@ urlpatterns = [
     #path('guestconfirmation/', views.guest_confirmation, name='guest_confiramtion'),
     #path('dashboard/send-invitation/', views.send_invitation, name='send_invitation'),
     path('dashboard/guests/send_invitation/<int:guest_id>/', views.send_invitation, name='send_invitation'),
+    path('dashboard/generate-invitation/', views.generate_invitation_link, name='generate_invitation_link'),
     path('dashboard/guests/rsvp/<int:guest_id>/', views.rsvp_response, name='rsvp_response'),
     path('dashboard/seating/', views.seating_chart, name='seating_chart'),
     path('dashboard/dietary/', views.dietary_preferences, name='dietary_preferences'),

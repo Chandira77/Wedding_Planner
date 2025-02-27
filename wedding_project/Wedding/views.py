@@ -9,8 +9,8 @@ from .forms import VenueForm, ServiceListingForm, SellerProfileForm, GuestForm, 
 from django.core.paginator import Paginator
 from django.db.models import Q, Sum, Count, Prefetch
 from django import forms
-from .models import Venue, ServiceListing, SellerProfile, Booking, Review, SellerEarnings, PricingRequest, Guest, RSVP, Seating, DietaryPreference, CheckIn
-import json
+from .models import Venue, ServiceListing, SellerProfile, Booking, Review, SellerEarnings, PricingRequest, Guest, RSVP, Event, Seating, DietaryPreference, CheckIn
+import json, uuid
 from django.urls import reverse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -650,18 +650,42 @@ def guest_check_in(request):
 # 🎯 RSVP RESPONSE (Accept or Decline)
 def rsvp_response(request, guest_id):
     guest = get_object_or_404(Guest, id=guest_id)
+    event = guest.event  # Assuming Guest model has event field
+
+    # Fetch or create RSVP entry for this guest
+    rsvp, created = RSVP.objects.get_or_create(guest=guest, defaults={'event': event})
 
     if request.method == "POST":
-        form = RSVPForm(request.POST)
+        form = RSVPForm(request.POST, instance=rsvp)  # Pass instance to update existing RSVP
         if form.is_valid():
-            rsvp, created = RSVP.objects.get_or_create(guest=guest)
-            rsvp.response = form.cleaned_data['response']
-            rsvp.save()
-            return redirect('dashboard/guest_list.html')
+            form.save()
+            messages.success(request, "RSVP response recorded successfully!")
+            return redirect('guest_list')  # Redirect to guest list view (update as needed)
     else:
-        form = RSVPForm()
+        form = RSVPForm(instance=rsvp)  # Pre-fill form if RSVP exists
 
     return render(request, 'dashboard/rsvp_response.html', {'form': form, 'guest': guest})
+
+
+
+
+@login_required
+def generate_invitation_link(request):
+    event = get_object_or_404(Event, created_by=request.user)
+    unique_token = uuid.uuid4().hex[:10]  # Generate unique token
+    event.invite_link = request.build_absolute_uri(reverse('user_dashboard')) + f"?invite={event.unique_token}"
+    event.save()
+    return render(request, 'dashboard/generate_invitation_link.html', {'invite_link': event.invite_link})
+
+
+
+
+def view_invitation(request, invite_token):
+    event = get_object_or_404(Event, invite_link__contains=invite_token)
+    return render(request, 'dashboard/invitation_page.html', {'event': event})
+
+
+
 
 def admin_page(request):
     return render(request, 'Wedding/admin.html')
