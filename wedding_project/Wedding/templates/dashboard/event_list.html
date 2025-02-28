@@ -1,0 +1,17 @@
+{% for event in events %}
+    <div>
+        <h3>{{ event.name }}</h3>
+        <p>Date: {{ event.date }}</p>
+        <p>Venue: {{ event.venue }}</p>
+        <button onclick="copyLink('{{ event.get_invite_link }}')">Generate Link</button>
+    </div>
+{% endfor %}
+
+<script>
+function copyLink(link) {
+    let fullLink = window.location.origin + link;
+    navigator.clipboard.writeText(fullLink).then(() => {
+        alert("Link copied: " + fullLink);
+    });
+}
+</script>

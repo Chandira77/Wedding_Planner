@@ -549,7 +549,15 @@ def contact(request):
 
 @login_required
 def user_dashboard(request):
-    return render(request, 'dashboard/user_dashboard.html')
+    user = request.user
+    events = Event.objects.filter(created_by=user)  # Fetch events created by logged-in user
+    guests = Guest.objects.filter(event__in=events)  # Fetch guests for events
+    
+    context = {
+        'events': events,
+        'guests': guests,
+    }
+    return render(request, 'dashboard/user_dashboard.html', context)
 
 
 
@@ -667,15 +675,97 @@ def rsvp_response(request, guest_id):
     return render(request, 'dashboard/rsvp_response.html', {'form': form, 'guest': guest})
 
 
+@login_required
+def create_event(request):
+    if request.method == "POST":
+        name = request.POST.get("name")
+        date = request.POST.get("date")
+        time = request.POST.get("time")
+        venue = request.POST.get("venue")
+        
+        unique_token = uuid.uuid4().hex[:10]  # Random token (10 chars)
+        invite_link = f"http://127.0.0.1:8000/invite/{unique_token}"  # Change for deployment
+        
+        event = Event.objects.create(
+            name=name,
+            date=date,
+            time=time,
+            venue=venue,
+            created_by=request.user,
+            invite_link=invite_link,
+            unique_token=unique_token
+        )
+        return JsonResponse({"success": True, "invite_link": invite_link})
+    
+    return JsonResponse({"success": False, "message": "Invalid Request"})
+
+
+
+# def event_detail(request, pk):
+#     event = get_object_or_404(Event, pk=pk, created_by=request.user)
+#     return render(request, 'dashboard/event_details.html', {'event': event})
+
+
+
+def event_detail(request, unique_token):  # Accept unique_token
+    event = get_object_or_404(Event, unique_token=unique_token)  # Retrieve event using unique_token
+
+    return render(request, 'dashboard/event_details.html', {'event': event})
+
+def event_list(request):
+    events = Event.objects.filter(created_by=request.user)  # Current user ko events matra dekhaucha
+    return render(request, 'dashboard/event_list.html', {'events': events})
+
+
+
+def edit_event(request, pk):
+    event = get_object_or_404(Event, pk=pk, created_by=request.user)
+
+    if request.method == "POST":
+        event.name = request.POST['name']
+        event.date = request.POST['date']
+        event.time = request.POST['time']
+        event.venue = request.POST['venue']
+        event.save()
+        return redirect('event_detail', pk=event.pk)
+
+    return render(request, 'dashboard/edit_event.html', {'event': event})
+
+
+
+def delete_event(request, pk):
+    event = get_object_or_404(Event, pk=pk, created_by=request.user)
+
+    if request.method == "POST":
+        event.delete()
+        return redirect('user_dashboard')
+
+    return render(request, 'dashboard/delete_event.html', {'event': event})
+
+
+def event_invite(request, token):
+    event = get_object_or_404(Event, unique_token=token)
+    return render(request, "event_invite.html", {"event": event})
+
 
 
 @login_required
 def generate_invitation_link(request):
-    event = get_object_or_404(Event, created_by=request.user)
-    unique_token = uuid.uuid4().hex[:10]  # Generate unique token
-    event.invite_link = request.build_absolute_uri(reverse('user_dashboard')) + f"?invite={event.unique_token}"
-    event.save()
-    return render(request, 'dashboard/generate_invitation_link.html', {'invite_link': event.invite_link})
+    try:
+        event = Event.objects.filter(created_by=request.user).latest('id')  # Get latest event
+        if not event.unique_token:
+            event.unique_token = uuid.uuid4().hex[:10]  # Generate unique token only if not set
+        
+        # Generate a shareable link to the event details page
+        event.invite_link = request.build_absolute_uri(reverse('event_detail', args=[event.unique_token]))
+        event.save()
+
+        print("Generated Invite Link:", event.invite_link)  # Debugging
+
+        return render(request, 'dashboard/generate_invitation_link.html', {'invite_link': event.invite_link})
+    except Event.DoesNotExist:
+        return JsonResponse({'error': 'No event found'}, status=400)
+
 
 
 

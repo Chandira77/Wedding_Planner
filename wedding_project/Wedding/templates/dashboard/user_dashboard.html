@@ -7,6 +7,66 @@
 <div class="container">
     <h2 class="text-center my-4">Welcome, {{ user.username }}!</h2>
 
+    <!-- Create Event Button -->
+    <div class="text-center mb-4">
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#eventModal">+ Create Event</button>
+    </div>
+
+    <!-- Create Event Modal -->
+    <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventModalLabel">Create Event</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Include create_event.html inside modal -->
+                    {% include 'dashboard/create_event.html' %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 🔹 User's Created Events -->
+    <div class="mt-4">
+        <h3 class="text-center">Your Events</h3>
+        {% if events %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Venue</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in events %}
+                    <tr>
+                        <td>{{ event.name }}</td>
+                        <td>{{ event.date }}</td>
+                        <td>{{ event.time }}</td>
+                        <td>{{ event.venue }}</td>
+                        <td>
+                            <a href="{% url 'event_detail' event.unique_token %}" class="btn btn-info btn-sm">View</a>
+                            <a href="{% url 'edit_event' event.id %}" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="{% url 'delete_event' event.id %}" class="btn btn-danger btn-sm">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-center text-muted">No events created yet.</p>
+        {% endif %}
+    </div>
+
+
+
+
     <!-- Dashboard Cards -->
     <div class="row">
         <!-- Manage Guests -->
@@ -83,5 +143,50 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById("eventForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        let formData = new FormData(this);
+    
+        fetch("{% url 'create_event' %}", {
+            method: "POST",
+            body: formData,
+            headers: { "X-CSRFToken": getCookie("csrftoken") }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById("inviteLink").textContent = data.invite_link;
+                document.getElementById("inviteLinkSection").style.display = "block";
+                var eventModal = new bootstrap.Modal(document.getElementById("eventModal"));
+                eventModal.hide();  // Close the modal
+            } else {
+                alert("Error creating event");
+            }
+        });
+    });
+    
+    function copyInviteLink() {
+        navigator.clipboard.writeText(document.getElementById("inviteLink").textContent);
+        alert("Link copied!");
+    }
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            let cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    </script>
+    
 
 {% endblock %}

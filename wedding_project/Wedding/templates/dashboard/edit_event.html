@@ -1,0 +1,35 @@
+{% extends 'base_generic.html' %}
+
+{% block title %}Edit Event{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center my-4">Edit Event</h2>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Event Name:</label>
+                    <input type="text" name="name" class="form-control" value="{{ event.name }}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Date:</label>
+                    <input type="date" name="date" class="form-control" value="{{ event.date|date:'Y-m-d' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Time:</label>
+                    <input type="time" name="time" class="form-control" value="{{ event.time|time:'H:i' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Venue:</label>
+                    <input type="text" name="venue" class="form-control" value="{{ event.venue }}" required>
+                </div>
+                <button type="submit" class="btn btn-success">Update Event</button>
+                <a href="{% url 'user_dashboard' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

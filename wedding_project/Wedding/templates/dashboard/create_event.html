@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Eventt</title>
+</head>
+<body>
+    <div class="modal-body"></div>
+        <form id="eventForm">
+            {% csrf_token %}
+
+            <label for="name">Event Name:</label>
+            <input type="text" id="name" name="name" required>
+    
+            <label for="date">Date:</label>
+            <input type="date" id="date" name="date" required>
+    
+            <label for="time">Time:</label>
+            <input type="time" id="time" name="time" required>
+    
+            <label for="venue">Venue:</label>
+            <input type="text" id="venue" name="venue" required>
+    
+            <button type="submit">Create Event</button>
+        </form>
+    </div>
+    
+    <!-- Invite Link Display -->
+    <div id="inviteLinkSection" style="display: none;">
+        <p>Invitation Link: <span id="inviteLink"></span></p>
+        <button onclick="copyInviteLink()">Copy Link</button>
+    </div>
+    
+    <script>
+    document.getElementById("eventForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        
+        let formData = new FormData(this);
+        
+        fetch("/dashboard/create-event/", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken")  // Django CSRF Token
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById("inviteLink").textContent = data.invite_link;
+                document.getElementById("inviteLinkSection").style.display = "block";
+            } else {
+                alert("Error creating event");
+            }
+        });
+    });
+    
+    // Function to Copy Link
+    function copyInviteLink() {
+        navigator.clipboard.writeText(document.getElementById("inviteLink").textContent);
+        alert("Link copied!");
+    }
+    
+    // CSRF Token Fetch Function
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            let cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    </script>
+</body>
+</html>
+
+
+
+

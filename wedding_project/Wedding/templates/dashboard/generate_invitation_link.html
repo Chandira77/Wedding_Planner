@@ -6,19 +6,27 @@
     <p>Share this link with your guests to invite them:</p>
     
     <div class="input-group mb-3">
-        <input type="text" class="form-control" id="invitationLink" value="{{ invitation_link }}" readonly>
+        <input type="text" class="form-control" id="invitationLink" value="{{ invite_link }}" readonly>
         <button class="btn btn-primary" onclick="copyLink()">Copy</button>
     </div>
+
+    <p>
+        <strong>Invitation Link:</strong> 
+        <a href="{{ invite_link }}" target="_blank">{{ invite_link }}</a>
+    </p>
     
     <a href="{% url 'user_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
 </div>
 
 <script>
 function copyLink() {
-    var copyText = document.getElementById("invitationLink");
-    copyText.select();
-    document.execCommand("copy");
-    alert("Copied the link: " + copyText.value);
+    var copyText = document.getElementById("invitationLink").value;
+    
+    navigator.clipboard.writeText(copyText).then(() => {
+        alert("Copied the link: " + copyText);
+    }).catch(err => {
+        console.error("Failed to copy text: ", err);
+    });
 }
 </script>
 

@@ -45,7 +45,12 @@ urlpatterns = [
     path('dashboard/seating/', views.seating_chart, name='seating_chart'),
     path('dashboard/dietary/', views.dietary_preferences, name='dietary_preferences'),
     path('dashboard/check-in/', views.guest_check_in, name='guest_check_in'),
-    #path('create_event/', views.create_event, name='create_event'),
+
+    path('dashboard/create_event/', views.create_event, name='create_event'),
+    path('dashboard/event/<str:unique_token>/', views.event_detail, name='event_detail'),
+    path('dashboard/events/', views.event_list, name='event_list'),
+    path('dashboard/event/<int:pk>/edit/', views.edit_event, name='edit_event'),
+    path('dashboard/event/<int:pk>/delete/', views.delete_event, name='delete_event'),
     #path('event/<int:event_id>/guests/', views.guest_list, name='guest_list'),
     #path('send_invitation/<int:guest_id>/', views.send_invitation, name='send_invitation'),
     #path('rsvp/<int:guest_id>/<str:response>/', views.rsvp_response, name='rsvp_response'),

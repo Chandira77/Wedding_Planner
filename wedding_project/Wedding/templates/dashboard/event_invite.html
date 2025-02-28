@@ -1,0 +1,13 @@
+{% extends 'base_generic.html' %}
+
+{% block title %}event invite {% endblock %}
+
+{% block content %}
+<!-- event_invite.html -->
+<h1>You're invited to {{ event.name }}!</h1>
+<p>Date: {{ event.date }}</p>
+<p>Time: {{ event.time }}</p>
+<p>Venue: {{ event.venue }}</p>
+<a href="#">RSVP Now</a>
+
+{% endblock %}
