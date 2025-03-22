@@ -4,6 +4,8 @@ from django.utils import timezone
 from django.utils.timezone import now
 from datetime import date
 import json
+import uuid
+from django.urls import reverse
 #from Wedding.models import Event
 
 
@@ -33,7 +35,7 @@ class Venue(models.Model):
     city = models.CharField(max_length=100, default='Unknown', db_index=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     capacity = models.PositiveIntegerField()
-    amenities = models.JSONField(null=True, blank=False)
+    amenities = models.JSONField(null=True, blank=False,default=dict)
     availability = models.JSONField(default=list)
     image = models.ImageField(upload_to='venue_images/', null=True, blank=True, default='default_venue.jpg')
     rating = models.FloatField(default=0)
@@ -48,6 +50,32 @@ class Venue(models.Model):
 
 
 
+
+class SellerProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    business_name = models.CharField(max_length=255)
+    phone = models.CharField(max_length=15)
+    location = models.CharField(max_length=200, blank=True, null=True)  # New field
+    profile_image = models.ImageField(upload_to='seller_profiles/', default='default.jpg')
+    description = models.TextField(blank=True, null=True)  # New field
+    services = models.TextField(blank=True, null=True)  # New field
+    website = models.URLField(blank=True, null=True)  # New field
+    average_rating = models.FloatField(default=0.0)  # New field
+    is_seller = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)  # New field
+
+    def __str__(self):
+        return self.business_name
+    
+
+
+class ServiceCategory(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class ServiceListing(models.Model):
     SERVICE_TYPES = [
         ('Catering', 'Catering'),
@@ -56,11 +84,11 @@ class ServiceListing(models.Model):
         ('Videography', 'Videography'),
     ]
 
-    seller = models.ForeignKey(User, on_delete=models.CASCADE)  # Seller info
+    seller = models.ForeignKey(User, on_delete=models.CASCADE) 
+    category = models.ForeignKey(ServiceCategory, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, default="Unnamed Service")
     description = models.TextField(default="No description available")
     service_type = models.CharField(max_length=50, choices=SERVICE_TYPES)  # Service category
-    category = models.CharField(max_length=100)  # Service category
     city = models.CharField(max_length=100)  # City
     status = models.CharField(max_length=20, choices=[('Active', 'Active'), ('Inactive', 'Inactive')], default='Active')  # Status
     images = models.ImageField(upload_to='service_images/', blank=True, null=True)  # Image Upload
@@ -93,8 +121,10 @@ class PricingRequest(models.Model):
         ('Rejected', 'Rejected'),
     ]
 
-    service_name = models.CharField(max_length=200)  # Store service name (Venue, Catering, etc.)
-    seller_email = models.EmailField(default="irachand620@gmail.com")  # Seller's email who will receive the request
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Track which user made the request
+    seller = models.ForeignKey(SellerProfile, on_delete=models.CASCADE) 
+    seller_email = models.EmailField()  
+    service_name = models.CharField(max_length=200)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField()
@@ -105,24 +135,9 @@ class PricingRequest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Pricing Request from {self.first_name} {self.last_name} for {self.venue.name if self.venue else 'Deleted Venue'}"
+        return f"Pricing Request from {self.user.username} for {self.service_name}"
 
 
-class SellerProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    business_name = models.CharField(max_length=255)
-    phone = models.CharField(max_length=15)
-    location = models.CharField(max_length=200, blank=True, null=True)  # New field
-    profile_image = models.ImageField(upload_to='seller_profiles/', default='default.jpg')
-    description = models.TextField(blank=True, null=True)  # New field
-    services = models.TextField(blank=True, null=True)  # New field
-    website = models.URLField(blank=True, null=True)  # New field
-    average_rating = models.FloatField(default=0.0)  # New field
-    is_seller = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)  # New field
-
-    def __str__(self):
-        return self.business_name
 
 
 
@@ -178,9 +193,7 @@ class UserProfile(models.Model):
 #     def __str__(self):
 #         return self.name
 
-import uuid
-from django.db import models
-from django.urls import reverse
+
 
 class Event(models.Model):
     name = models.CharField(max_length=255)
@@ -261,3 +274,14 @@ class DietaryPreference(models.Model):
 class CheckIn(models.Model):
     guest = models.OneToOneField(Guest, on_delete=models.CASCADE)
     checked_in = models.BooleanField(default=False)
+
+
+
+
+
+class NewsletterSubscriber(models.Model):
+    email = models.EmailField(unique=True)
+    subscribed_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.email

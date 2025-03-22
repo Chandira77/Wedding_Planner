@@ -1,32 +1,74 @@
+/* Background image for the entire login page */
 body {
-    background-color: #f8f9fa;
-    font-family: Arial, sans-serif;
+    
+    background-color: #fce4ec; /* Soft pink wedding theme */
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
 }
 
 .container {
-    max-width: 400px;
-    margin: 100px auto;
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background: url("../../Authentication/images/engage.jpeg") no-repeat center center/cover;
+    justify-content: center;
+    align-items: center;
+    width: 900px;
+    height: 500px;
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
 }
 
-h2 {
+.row {
+    display: flex;
+    justify-content: space-between;
+    width: 900px;
+    gap: 40px; /* Adds space between left and right sections */
+}
+
+/* Login Container */
+
+
+/* Left Content Styling */
+.left-content {
+    flex: 1;
+    /* background: rgba(0, 0, 0, 0.7); */
+    /* background-color: rebeccapurple; */
+    color: white;
+    font-size: x-large;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px;
     text-align: center;
-    color: #333;
+    border-radius: 30px;
+    margin: 40px;
 }
 
-.form-label {
-    font-weight: bold;
+.right-form {
+    flex: 1;
+    background: white;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 10px;
+    padding-right: 10px;
 }
 
 .btn-primary {
-    width: 100%;
-    background-color: #007bff;
+    background: #007bff;
     border: none;
+    padding: 12px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
 }
 
 .btn-primary:hover {
-    background-color: #0056b3;
+    background: #0056b3;
 }

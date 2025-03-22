@@ -1,0 +1,34 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+{% block content %}
+<form method="POST" action="{% url 'request_pricing' %}">
+    {% csrf_token %}
+
+    <label for="service_name">Service Name</label>
+    <input type="text" name="service_name" id="service_name" required>
+
+    <label for="seller_email">Seller Email</label>
+    <input type="email" name="seller_email" id="seller_email" required>
+
+    <label for="first_name">First Name</label>
+    <input type="text" name="first_name" id="first_name" required>
+
+    <label for="last_name">Last Name</label>
+    <input type="text" name="last_name" id="last_name" required>
+
+    <label for="email">Email</label>
+    <input type="email" name="email" id="email" required>
+
+    <label for="phone">Phone</label>
+    <input type="tel" name="phone" id="phone" required>
+
+    <label for="event_date">Event Date</label>
+    <input type="date" name="event_date" id="event_date" required>
+
+    <label for="message">Message</label>
+    <textarea name="message" id="message" required></textarea>
+
+    <button type="submit">Send Request</button>
+</form>
+
+{% endblock %}

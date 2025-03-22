@@ -1,6 +1,6 @@
 from django import forms
 import json
-from .models import Venue, ServiceListing, PricingRequest, SellerProfile, UserProfile, Guest, RSVP, Event
+from .models import Venue, ServiceListing, PricingRequest, SellerProfile, UserProfile, Guest, RSVP, Event, NewsletterSubscriber
 
 class VenueForm(forms.ModelForm):
     status = forms.ChoiceField(
@@ -21,13 +21,25 @@ class VenueForm(forms.ModelForm):
             'city': forms.TextInput(attrs={"class": "form-control", "placeholder": "City"}),
             'price': forms.NumberInput(attrs={"class": "form-control", "placeholder": "Price"}),
             'capacity': forms.NumberInput(attrs={"class": "form-control", "placeholder": "Capacity"}),
-            'amenities': forms.Textarea(attrs={"class": "form-control", "rows": 3, "placeholder": "Comma-separated amenities"}),
+            'amenities': forms.Textarea(attrs={"class": "form-control", "rows": 3, "placeholder": "Enter amenities (comma-separated)"}),
             'availability': forms.DateInput(attrs={"type": "date", "class": "form-control"}),
             'base_price': forms.NumberInput(attrs={"class": "form-control", "placeholder": "Base Price"}),
             'extra_guest_price': forms.NumberInput(attrs={"class": "form-control", "placeholder": "Extra Guest Price"}),
             'amenities_price': forms.Textarea(attrs={"class": "form-control", "rows": 3, "placeholder": "JSON format"}),
             'image': forms.ClearableFileInput(attrs={"class": "form-control"}),
         }
+
+    def clean_amenities(self):
+        amenities = self.cleaned_data.get('amenities')
+
+        if isinstance(amenities, str):
+            # If amenities are in a comma-separated string, split and convert to a list
+            amenities_list = [item.strip() for item in amenities.split(',') if item.strip()]
+            return amenities_list
+        return amenities  # In case it's already a list (from JSON or previous entry)
+
+
+
 
 
 
@@ -78,18 +90,28 @@ class PricingRequestForm(forms.ModelForm):
     class Meta:
         model = PricingRequest
         fields = [
-            'service_name', 'seller_email', 'first_name', 'last_name',
+            'service_name', 'first_name', 'last_name',
             'email', 'phone', 'event_date', 'message'
         ]
         widgets = {
             'service_name': forms.TextInput(attrs={"class": "form-control", "placeholder": "Service Name"}),
-            'seller_email': forms.EmailInput(attrs={"class": "form-control", "placeholder": "Seller Email"}),
             'first_name': forms.TextInput(attrs={"class": "form-control", "placeholder": "First Name"}),
             'last_name': forms.TextInput(attrs={"class": "form-control", "placeholder": "Last Name"}),
             'email': forms.EmailInput(attrs={"class": "form-control", "placeholder": "Your Email"}),
             'phone': forms.TextInput(attrs={"class": "form-control", "placeholder": "Phone Number"}),
             'message': forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Your message..."}),
         }
+
+    def save(self, commit=True, user=None, seller_email=None):
+        pricing_request = super().save(commit=False)
+        if user:
+            pricing_request.user = user  # Assign logged-in user
+        if seller_email:
+            pricing_request.seller_email = seller_email  # Assign seller's email
+        if commit:
+            pricing_request.save()
+        return pricing_request
+
 
 
 
@@ -160,3 +182,14 @@ class PublicRSVPForm(forms.ModelForm):
                 initial=guest,
                 widget=forms.HiddenInput()
             )
+
+
+
+
+
+
+
+class NewsletterForm(forms.ModelForm):
+    class Meta:
+        model = NewsletterSubscriber
+        fields = ['email']

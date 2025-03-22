@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from .forms import VenueForm, ServiceListingForm, SellerProfileForm, GuestForm, RSVPForm
+from .forms import VenueForm, ServiceListingForm, SellerProfileForm, GuestForm, RSVPForm, NewsletterForm
 from django.core.paginator import Paginator
 from django.db.models import Q, Sum, Count, Prefetch
 from django import forms
@@ -18,6 +18,20 @@ from django.views.decorators.csrf import csrf_exempt
 def index(request):
     venues = Venue.objects.all() 
     return render(request, 'Wedding/index.html', {'venues': venues})
+
+
+
+def newsletter_signup(request):
+    if request.method == "POST":
+        form = NewsletterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Thank you for subscribing!")
+            return redirect('home')  # Redirect to home page (change as needed)
+    else:
+        form = NewsletterForm()
+
+    return render(request, 'partials/footer.html', {'form': form})
 
 class ExampleForm(forms.Form):
     example_input = forms.CharField(label='Example Input', max_length=100)
@@ -133,13 +147,31 @@ def venue_type(request, venue_type):
     return render(request, 'Wedding/venue_type.html', {'venue_type': venue_type})
 
 
+@login_required
 @csrf_exempt
 def request_pricing(request):
     if request.method == "POST":
-        service_name = request.POST.get("service_name")  # Get service name
-        seller_email = request.POST.get("seller_email")  # Get seller's email
+        service_name = request.POST.get("service_name")  
+        seller_email = request.POST.get("seller_email")  
 
+        # Debugging: Check if the seller email is being received correctly
+        print(f"Seller email received: {seller_email}")
+
+        # Find the seller profile using the email (case-insensitive)
+        seller = SellerProfile.objects.filter(user__email__iexact=seller_email).first()
+        if not seller:
+            print(f"Seller with email {seller_email} not found.")
+            return JsonResponse({"error": "Seller not found"}, status=400)
+
+        # Ensure the seller is properly linked
+        if not seller.user:
+            print(f"Seller {seller_email} does not have a valid user account.")
+            return JsonResponse({"error": "Seller is not linked to a user"}, status=400)
+
+        # Create Pricing Request entry
         new_request = PricingRequest.objects.create(
+            user=request.user,
+            seller=seller,  # Ensure the seller is properly linked
             service_name=service_name,
             seller_email=seller_email,
             first_name=request.POST["first_name"],
@@ -153,21 +185,30 @@ def request_pricing(request):
         # Send email to seller
         send_mail(
             subject=f"New Pricing Request for {service_name}",
-            message=f"You have received a new pricing request from {new_request.first_name} {new_request.last_name}.\n\n"
-                    f"Service: {service_name}\n"
-                    f"Customer Email: {new_request.email}\n"
-                    f"Phone: {new_request.phone}\n"
-                    f"Event Date: {new_request.event_date}\n"
-                    f"Message: {new_request.message}\n\n"
-                    "Please check your dashboard to respond.",
-            from_email="your-email@example.com",
-            recipient_list=[seller_email],  # Send to seller
+            message=f"""
+            You have received a new pricing request from {new_request.first_name} {new_request.last_name}.
+
+            Service: {service_name}
+            Customer Email: {new_request.email}
+            Phone: {new_request.phone}
+            Event Date: {new_request.event_date}
+            Message: {new_request.message}
+
+            Please check your dashboard to respond.
+            """,
+            from_email=new_request.email,
+            recipient_list=[seller_email],
             fail_silently=False,
         )
 
-        return redirect("success_page")  # Update with your actual success page
+        messages.success(request, 'Your pricing request has been sent successfully!')
+
+        return redirect("success_page")
 
     return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+
 
 
 def success_page(request):
@@ -185,17 +226,50 @@ def send_request(request):
         event_date = request.POST.get("event_date")
         message = request.POST.get("message")
 
-        # Example: Send Email (modify as needed)
-        send_mail(
-            subject=f"New Pricing Request for {venue_name}",
-            message=f"User {first_name} {last_name} ({email}, {phone}) has requested pricing for {venue_name} on {event_date}.\n\nMessage:\n{message}",
-            from_email="noreply@yourdomain.com",
-            recipient_list=["seller@example.com"],  # Replace with seller's email
+        # Get seller email from venue model (Assuming Venue model exists)
+        try:
+            venue = Venue.objects.get(id=venue_id)  
+            seller_email = venue.seller.email  # Seller को email निकाल्ने 
+        except Venue.DoesNotExist:
+            return JsonResponse({"error": "Venue not found"}, status=404)
+
+        # Save to database (so it appears in seller's dashboard)
+        new_request = PricingRequest.objects.create(
+            user=request.user,  
+            service_name=venue_name,
+            seller_email=seller_email,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            phone=phone,
+            event_date=event_date,
+            message=message,
         )
 
-        return JsonResponse({"success": True})
-    
-    return JsonResponse({"success": False})
+        # Send email to seller
+        send_mail(
+            subject=f"New Pricing Request for {venue_name}",
+            message=f"""
+            You have received a new pricing request from {new_request.first_name} {new_request.last_name}.
+
+            Service: {venue_name}
+            Customer Email: {new_request.email}
+            Phone: {new_request.phone}
+            Event Date: {new_request.event_date}
+            Message: {new_request.message}
+
+            Please check your dashboard to respond.
+            """,
+            from_email=email,
+            recipient_list=[seller_email],
+            fail_silently=False,
+            headers={"Reply-To": email},
+        )
+
+        return JsonResponse({"success": True, "message": "Your pricing request has been sent!"})
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
 
 
 
@@ -212,8 +286,8 @@ def sellerdashboard(request):
         return redirect('seller_registration')  # Redirect to registration page
 
     # Fetch venues and service listings
-    venues = Venue.objects.filter(seller=user).prefetch_related('bookings')
-    service_listings = ServiceListing.objects.filter(seller=user)
+    venues = Venue.objects.filter(seller=user).prefetch_related('booking_set')  # Updated prefetch for bookings
+    service_listings = ServiceListing.objects.filter(seller=user).select_related('category')
 
     # Add withdrawal URL for venues
     for venue in venues:
@@ -226,16 +300,17 @@ def sellerdashboard(request):
 
     total_earnings = SellerEarnings.objects.filter(seller=user).aggregate(Sum('total_earnings'))['total_earnings__sum'] or 0
 
-    # Get different booking statuses
-    bookings = Booking.objects.filter(venue__in=venues).select_related('venue')
-    pending_bookings = bookings.filter(status='Pending').count()
-    confirmed_bookings = bookings.filter(status='Confirmed').count()
-    completed_bookings = bookings.filter(status='Completed').count()
-    canceled_bookings = bookings.filter(status='Canceled').count()
+    # Get different booking statuses efficiently
+    pending_bookings = Booking.objects.filter(venue__in=venues, status='Pending').count()
+    confirmed_bookings = Booking.objects.filter(venue__in=venues, status='Confirmed').count()
+    completed_bookings = Booking.objects.filter(venue__in=venues, status='Completed').count()
+    canceled_bookings = Booking.objects.filter(venue__in=venues, status='Canceled').count()
 
     # Get recent transactions (last 5 withdrawals)
-    recent_transactions = SellerEarnings.objects.filter(seller=user).order_by('created_at')  # ✅ Correct field
+    recent_transactions = SellerEarnings.objects.filter(seller=user).order_by('-created_at')[:5]  # Get the latest 5
 
+    # Pricing requests for the seller
+    pricing_requests = PricingRequest.objects.filter(seller=seller_profile).order_by('-created_at')
 
     context = {
         'seller': seller_profile,
@@ -249,11 +324,41 @@ def sellerdashboard(request):
         'total_earnings': total_earnings,
         'venues': venues,
         'service_listings': service_listings,
-        'bookings': bookings[:5],  # Show only the latest 5 bookings
-        'recent_transactions': recent_transactions,  # Add recent earnings transactions
+        'bookings': Booking.objects.filter(venue__in=venues).select_related('venue', 'user').order_by('-booking_date')[:5],  # Latest bookings
+        'recent_transactions': recent_transactions,
+        'pricing_requests': pricing_requests,
     }
 
     return render(request, 'dashboard/sellerdashboard.html', context)
+
+
+
+
+
+
+
+@login_required
+def update_pricing_request_status(request, request_id):
+    if request.method == "POST":
+        try:
+            pricing_request = PricingRequest.objects.get(id=request_id, seller_email=request.user.email)
+            new_status = request.POST.get("status")
+            if new_status in ["Pending", "Approved", "Rejected"]:
+                pricing_request.status = new_status
+                pricing_request.save()
+                messages.success(request, f"Pricing request status updated to {new_status}.")
+            else:
+                messages.error(request, "Invalid status update.")
+        except PricingRequest.DoesNotExist:
+            messages.error(request, "Request not found.")
+    
+    return redirect("sellerdashboard")
+
+
+
+
+
+
 @login_required
 def login_success(request):
     if request.user.groups.filter(name="Seller").exists():
@@ -434,10 +539,12 @@ def edit_venue(request, venue_id):
     if request.method == "POST":
         form = VenueForm(request.POST, request.FILES, instance=venue)
         if form.is_valid():
+            # Save the form and ensure the image is saved
             form.save()
             return redirect('manage_listings')  # Redirect after successful edit
     else:
-        form = VenueForm(instance=venue)
+        form = VenueForm(instance=venue)  # Pre-populate the form with the existing venue data
+
     return render(request, 'Wedding/edit_venue.html', {'form': form, 'venue': venue})
 
 
@@ -541,8 +648,9 @@ def calculate_price(request, id):
 def decorations(request):
     return render(request, 'Wedding/decorations.html')
 
-def contact(request):
-    return render(request, 'Wedding/contact.html')
+
+def contact_us(request):
+    return render(request, 'dashboard/contact_us.html')
 
 # Actor Pages
 
@@ -715,6 +823,8 @@ def event_detail(request, unique_token):  # Accept unique_token
 def event_list(request):
     events = Event.objects.filter(created_by=request.user)  # Current user ko events matra dekhaucha
     return render(request, 'dashboard/event_list.html', {'events': events})
+
+
 
 
 

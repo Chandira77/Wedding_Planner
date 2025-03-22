@@ -1,164 +1,118 @@
-/* Global Styles */
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: #f9f9f9;
-    color: #333;
-    margin: 0;
-    padding: 0;
-}
-
-.container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 20px;
-}
-
-/* Filter Section */
-#apply_filter {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-#apply_filter h3 {
-    color: #d63384;
-    margin-bottom: 15px;
-    font-weight: 600;
-}
-
-#apply_filter label {
-    display: block;
-    font-weight: 500;
-    margin-top: 10px;
-}
-
-#apply_filter .form-control {
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-
-.btn-primary {
-    background-color: #d63384;
-    border: none;
-    padding: 10px;
-    font-weight: 500;
-    border-radius: 5px;
-}
-
-.btn-primary:hover {
-    background-color: #b52d6e;
-}
-
-/* Venue Listings */
-.venue-item {
-    background: black;
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    transition: transform 0.3s ease;
-}
-
-.venue-item:hover {
-    transform: scale(1.02);
-}
-
-.venue-img {
-    width: 180px;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-right: 20px;
-}
-
-.venue-details h4 {
-    color: #d63384;
-    font-weight: 600;
-}
-
-.venue-details p {
-    font-size: 14px;
-    margin: 5px 0;
-}
-
-/* Pagination */
-.pagination {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.pagination a {
-    padding: 8px 15px;
-    margin: 0 5px;
-    background: #d63384;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 5px;
-}
-
-.pagination a:hover {
-    background: #b52d6e;
-}
-
 /* Footer Styles */
 footer {
-    background: #222;
-    color: #fff;
-    padding: 40px 0;
-    text-align: center;
+    background-color: #222; /* Dark background for contrast */
+    color: #fff; /* White text for readability */
+    padding: 50px 0;
+    font-size: 16px;
 }
 
-footer h4 {
+/* Footer Container */
+.footer-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    max-width: 1200px;
+    margin: auto;
+    padding: 0 20px;
+}
+
+/* Footer Sections */
+.footer-section {
+    flex: 1;
+    min-width: 250px;
+    margin-bottom: 20px;
+}
+
+.footer-section h4 {
+    font-size: 18px;
     font-weight: 600;
     margin-bottom: 15px;
-    color: #d63384;
+    color: #f8b400; /* Accent color */
 }
 
-footer ul {
+/* Contact Info */
+.contact-info p {
+    margin: 5px 0;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+/* Quick Links */
+.quick-links ul {
     list-style: none;
     padding: 0;
 }
 
-footer ul li {
-    margin: 5px 0;
+.quick-links ul li {
+    margin-bottom: 8px;
 }
 
-footer ul li a {
-    color: black;
+.quick-links ul li a {
+    color: #fff;
     text-decoration: none;
-    transition: color 0.3s;
+    transition: 0.3s;
 }
 
-footer ul li a:hover {
-    color: #d63384;
+.quick-links ul li a:hover {
+    color: #f8b400; /* Highlight on hover */
 }
 
+/* Social Media */
 .social-media a {
-    color: #d63384;
-    text-decoration: none;
+    display: inline-block;
     margin-right: 10px;
+    text-decoration: none;
+    color: #fff;
     font-size: 16px;
+    transition: 0.3s;
+}
+
+.social-media a:hover {
+    color: #f8b400;
+}
+
+/* Newsletter */
+.newsletter {
+    text-align: center;
+    margin-top: 20px;
 }
 
 .newsletter input {
-    width: 60%;
+    width: 100%;
     padding: 10px;
+    border: none;
     border-radius: 5px;
-    border: 1px solid #ccc;
+    font-size: 14px;
 }
 
 .newsletter button {
-    background: #d63384;
+    background-color: #f8b400;
+    color: #222;
     border: none;
-    padding: 10px 15px;
-    color: #fff;
-    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 14px;
     cursor: pointer;
+    transition: 0.3s;
+    border-radius: 5px;
 }
 
 .newsletter button:hover {
-    background: #b52d6e;
+    background-color: #e09d00;
+}
+
+/* Copyright */
+.footer-bottom {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 20px;
+    opacity: 0.7;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+    }
 }

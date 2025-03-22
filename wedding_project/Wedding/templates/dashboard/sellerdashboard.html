@@ -102,24 +102,25 @@
             <tbody>
                 {% for booking in bookings %}
                 <tr>
-                    <td>{{ request.service_name }}</td>
-                    <td>{{ request.first_name }} {{ request.last_name }}</td>
-                    <td>{{ request.email }}</td>
-                    <td>{{ request.phone }}</td>
-                    <td>{{ request.event_date }}</td>
-                    <td>{{ request.message }}</td>
-                    <td>{{ request.status }}</td>
+                    <td>{{ booking.service_name }}</td>
+                    <td>{{ booking.user.first_name }} {{ booking.user.last_name }}</td>
+                    <td>{{ booking.user.email }}</td>
+                    <td>{{ booking.user.phone }}</td>
+                    <td>{{ booking.event_date }}</td>
+                    <td>{{ booking.message }}</td>
+                    <td>{{ booking.status }}</td>
                     <td>
-                        <form method="POST" action="{% url 'update_request_status' request.id %}">
+                        <form method="POST" action="{% url 'update_request_status' booking.id %}">
                             {% csrf_token %}
                             <select name="status">
-                                <option value="Pending" {% if request.status == 'Pending' %}selected{% endif %}>Pending</option>
-                                <option value="Approved" {% if request.status == 'Approved' %}selected{% endif %}>Approved</option>
-                                <option value="Rejected" {% if request.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                                <option value="Pending" {% if booking.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                <option value="Approved" {% if booking.status == 'Approved' %}selected{% endif %}>Approved</option>
+                                <option value="Rejected" {% if booking.status == 'Rejected' %}selected{% endif %}>Rejected</option>
                             </select>
                             <button type="submit">Update</button>
                         </form>
                     </td>
+
                 </tr>
                 {% endfor %}
             </tbody>

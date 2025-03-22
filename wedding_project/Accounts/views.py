@@ -1,6 +1,7 @@
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -25,7 +26,12 @@ def login_view(request):
 
         if user is not None:
             login(request, user)  # Log the user in
-            profile = Profile.objects.get(user=user)  # Get user role
+            
+            try:
+                profile = Profile.objects.get(user=user)  # Get user role
+            except ObjectDoesNotExist:
+                messages.error(request, "Profile not found. Please contact support.")
+                return redirect('login')  # Get user role
 
             # Redirect based on role
             if profile.role == 'user':
@@ -79,20 +85,26 @@ def register_view(request):
         # ✅ Create user and profile
         try:
             user = User.objects.create_user(username=username, email=email, password=password)
+            login(request, user)  # Automatically log in the user after registration
             
-            # ✅ If seller, include business category, otherwise keep it empty
-            if role == "seller" and not business_category:
-                messages.error(request, "Business category is required for sellers.")
-                return redirect("register")
+            # ✅ Create the appropriate profile
+            if role == "seller":
+                if not business_category:
+                    messages.error(request, "Business category is required for sellers.")
+                    return redirect("register")
+                SellerProfile.objects.create(user=user, business_category=business_category)
+                messages.success(request, "Seller account created successfully!")
+                return redirect("seller_dashboard")
 
-            Profile.objects.create(
-                user=user, 
-                role=role, 
-                business_category=business_category if role == "seller" else None
-            )
+            elif role == "user":
+                UserProfile.objects.create(user=user)
+                messages.success(request, "User account created successfully!")
+                return redirect("user_dashboard")
 
-            messages.success(request, "Registration successful! You can now log in.")
-            return redirect("login")
+            else:
+                messages.success(request, "Account created! Please log in.")
+                return redirect("login")
+
         except Exception as e:
             messages.error(request, f"An error occurred: {e}")
             return redirect("register")
@@ -121,11 +133,11 @@ def logout_view(request):
 
 @login_required
 def profile_view(request):
-    if hasattr(request.user, 'sellerprofile'):  # Seller ho vane
+    if SellerProfile.objects.filter(user=request.user).exists():
         seller_profile = get_object_or_404(SellerProfile, user=request.user)
         return render(request, "Authentication/profile.html", {"seller_profile": seller_profile})
 
-    elif hasattr(request.user, 'userprofile'):  # User ho vane
+    elif UserProfile.objects.filter(user=request.user).exists():
         user_profile = get_object_or_404(UserProfile, user=request.user)
         return render(request, "Authentication/profile.html", {"user_profile": user_profile})
 

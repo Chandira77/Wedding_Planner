@@ -2,24 +2,32 @@
 {% load static %}
 
 {% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'Authentication/css/login.css' %}">
 
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="row justify-content-center align-items-center">
+        <!-- Left Section -->
+        <div class="col-md-5 left-content shadow-lg rounded">
+            <h2>Welcome Back!</h2>
+            <p>Plan your perfect wedding with us.</p>
+        </div>
 
-    <!-- <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}"> -->
-
-    <div class="container mt-5">
-        <link rel="stylesheet" type="text/css" href="{% static 'Authentication/css/login.css' %}">
-        <h2>Login</h2>
-        <form method="POST">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" class="form-control" id="username" name="username" required>
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" name="password" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Login</button>
-        </form>
+        <!-- Right Section -->
+        <div class="col-md-5 right-form shadow-lg rounded">
+            <h2 class="text-center">Login</h2>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+            </form>
+        </div>
     </div>
+</div>
 {% endblock %}

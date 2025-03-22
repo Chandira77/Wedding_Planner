@@ -12,6 +12,20 @@
         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#eventModal">+ Create Event</button>
     </div>
 
+
+    <div class="text-center">
+        <a href="{% url 'profile' %}" class="btn btn-primary">View Profile</a>
+    </div>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+
     <!-- Create Event Modal -->
     <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
         <div class="modal-dialog">

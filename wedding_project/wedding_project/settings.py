@@ -147,6 +147,10 @@ DEFAULT_FROM_EMAIL = 'inachand920@gmail.com'
 LOGIN_REDIRECT_URL = '/seller/seller_dashboard/' 
 LOGIN_REDIRECT_URL = '/login_success/'
 LOGIN_REDIRECT_URL = '/user_dashboard/'
+LOGIN_REDIRECT_URL = "/profile/"
+LOGIN_REDIRECT_URL = '/actor/user/'  # Change this to your user dashboard URL
+
+
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

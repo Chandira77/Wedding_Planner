@@ -3,11 +3,12 @@
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
-from Wedding.views import photography, catering, decorations, contact, test_view, venue_view, venue_detail, save_pricing, calculate_price, request_pricing, success_page, send_request, login_success, add_venue, booking_requests, edit_seller_profile
+from Wedding.views import photography, catering, decorations, test_view, venue_view, venue_detail, save_pricing, calculate_price, request_pricing, success_page, send_request, login_success, add_venue, booking_requests, edit_seller_profile
 
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('subscribe/', views.newsletter_signup, name='newsletter_signup'),
     path('venues/', venue_view, name='venue'),
     path('venues/<int:venue_id>/', venue_detail, name='venue_detail'),
     path('book/venue/<int:venue_id>/', views.book_venue, name='book_venue'),
@@ -29,7 +30,10 @@ urlpatterns = [
     path('services/decorations/', views.decorations, name='decorations'),
     #path('venues/<int:venue_id>/', views.venue_detail, name='venue_detail'),
     path('test/', test_view, name='test_view'),
-    path('contact/', views.contact, name='contact'),
+    path('dashboard/contact-us/', views.contact_us, name='contact_us'),
+
+    
+
     
     # Actor Pages
     path('actor/user/', views.user_dashboard, name='user_dashboard'),
@@ -61,6 +65,7 @@ urlpatterns = [
     path('actor/admin/', views.admin_page, name='admin_page'),
     path('actor/guest/', views.guest_page, name='guest_page'),
     path('actor/seller/', views.sellerdashboard, name='sellerdashboard'),
+    path('update-pricing-request-status/<int:request_id>/', views.update_pricing_request_status, name='update_pricing_request_status'),
 
 
     path('login_success/', login_success, name='login_success'),
