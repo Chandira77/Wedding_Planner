@@ -5,11 +5,15 @@
 
 {% block content %}
     <link rel="stylesheet" type="text/css" href="{% static 'Wedding/css/index.css' %}">
-    <section class="hero">
-        <h1>Welcome to Your Dream Wedding Organizer</h1>
-        <p>Plan your perfect wedding with us. Discover services, locations, and ideas to make your day special.</p>
-        
-    </section>
+    <div class="hero">
+        <div class="hero-text">
+            <h1>Celebrate Your Love</h1>
+            <p>Join us for a beautiful wedding ceremony filled with love, joy, and unforgettable memories. Let us make your special day truly magical.</p>
+        </div>
+        <div class="hero-image">
+            <img src="{% static 'Wedding/images/wedding_banner.jpg' %}" alt="Wedding Image">
+        </div>
+    </div>
     <section class="venues py-5">
         <div class="container">
             <h2 class="text-center mb-4">Venues</h2>
@@ -98,10 +102,16 @@
                 <img src="{% static 'Wedding/images/gallery2.jpeg' %}" alt="Gallery Image 2">
             </div>
             <div class="gallery-item">
-                <img src="{% static 'Wedding/images/gallery3.jpeg' %}" alt="Gallery Image 3">
+                <img src="{% static 'Wedding/images/gallery4.jpeg' %}" alt="Gallery Image 3">
             </div>
             <div class="gallery-item">
-                <img src="{% static 'Wedding/images/gallery4.jpeg' %}" alt="Gallery Image 4">
+                <img src="{% static 'Wedding/images/gallerynew.jpg' %}" alt="Gallery Image 4">
+            </div>
+            <div class="gallery-item">
+                <img src="{% static 'Wedding/images/gallerynew1.jpg' %}" alt="Gallery Image 5">
+            </div>
+            <div class="gallery-item">
+                <img src="{% static 'Wedding/images/gallerynew2.jpeg' %}" alt="Gallery Image 6">
             </div>
         </div>
     </section>

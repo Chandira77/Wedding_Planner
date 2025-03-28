@@ -1,52 +1,66 @@
 body {
-    background-color: #f2e6ef;
+    background-color: #f2e6ef; /* Background color for the body */
+    margin: 0; /* Remove default margin */
 }
 
 .hero {
-    width: 100%;
-    height: 90vh; /* Adjust height as needed */
-    background-image: url("../images/wedding_banner.jpg"); /* Ensure correct path */
-    background-size: 100% auto;
-    background-position: center;
-    background-repeat: no-repeat;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: white;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
-    padding: 20px;
+    display: flex; /* Use flexbox for layout */
+    align-items: center; /* Center items vertically */
+    justify-content: space-between; /* Space between text and image */
+    padding: 20px; /* Padding around the hero section */
+    height: 90vh; /* Full height of the viewport */
+    background-color: #4a4e69; /* Professional background color */
+    color: white; /* Text color */
 }
 
-.hero img {
-    max-width: 100%;         /* Image lai responsive banauna */
-    height: auto;            /* Maintain aspect ratio */
-    margin-top: 20px;        /* Thoda gap halna */
+.hero-text {
+    flex: 1; /* Take up 50% of the space */
+    padding: 20px; /* Padding for text */
 }
 
-.hero h1 {
-    font-size: 3rem;
-    font-weight: bold;
-    margin-bottom: 10px;
-    
+.hero-text h1 {
+    font-size: 3rem; /* Font size for the heading */
+    margin-bottom: 10px; /* Space below the heading */
 }
 
-.hero p {
-    font-size: 1.5rem;
-    max-width: 700px;
-    margin-bottom: 20px;
+.hero-text p {
+    font-size: 1.5rem; /* Font size for the paragraph */
+    max-width: 600px; /* Limit width for better readability */
 }
 
-.hero img {
-    display: none;
+.hero-image {
+    flex: 1; /* Take up available space */
+    display: flex; /* Use flexbox for layout */
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+    background-color: #f0f0f0; /* Light background color for contrast */
+    padding: 20px; /* Add padding around the image */
+    border-radius: 15px; /* Rounded corners for the container */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    width: 100%; /* Set the width of the container to 100% */
+    max-width: 1200px; /* Optional: set a maximum width for larger screens */
 }
+
+.hero-image img {
+    width: 100%; /* Ensure the image takes up the full width of the container */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 10px; /* Optional: rounded corners for aesthetics */
+    object-fit: cover; /* Ensure the image covers the area without distortion */
+    transition: transform 0.3s ease; /* Smooth transition for hover effect */
+}
+.hero-image img:hover {
+    transform: scale(1.05); /* Slightly enlarge the image on hover */
+}
+
+
 
 
 .venues {
-    background-color: #f8f9fa; /* Light gray background */
-    padding: 60px 0;
+    background-color: #e0f7fa; /* Change this to your desired background color */
+    padding: 60px 20px;
+    text-align: center; /* Center text */
 }
+
 
 .venues h2 {
     font-size: 2.5rem;
@@ -68,6 +82,8 @@ body {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border-radius: 12px;
     overflow: hidden;
+    background-color: #ffffff; /* White background for cards */
+    width: 300px; /* Fixed width for cards */
 }
 
 .card:hover {
@@ -94,6 +110,12 @@ body {
     margin-bottom: 15px;
 }
 
+.card-description {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 15px;
+}
+
 .btn-primary {
     background-color: #ff6f61;
     border: none;
@@ -110,17 +132,20 @@ body {
 
 
 
+
+/* Featured Services Section */
 /* Featured Services Section */
 .featured-services {
-    background-color: #fff;
+    background-color: #f0f4f8; /* Soft background for a modern feel */
     text-align: center;
     padding: 60px 20px;
+    border-radius: 15px; /* Rounded corners for a softer look */
 }
 
 .featured-services h2 {
     font-size: 2.5rem;
     font-weight: bold;
-    color: #333;
+    color: #2c3e50; /* Darker shade for better contrast */
     margin-bottom: 40px;
 }
 
@@ -134,9 +159,9 @@ body {
 
 /* Individual Service Card */
 .service-card {
-    background: #f8f9fa;
+    background: #ffffff; /* White background for cards */
     border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Slightly stronger shadow */
     overflow: hidden;
     width: 320px; /* Adjust width */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -145,7 +170,7 @@ body {
 
 .service-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
 }
 
 /* Service Images */
@@ -160,14 +185,14 @@ body {
 .service-card h3 {
     font-size: 1.6rem;
     font-weight: 600;
-    color: #444;
+    color: #2980b9; /* Bright blue for titles */
     margin: 15px 0;
 }
 
 /* Service Description */
 .service-card p {
     font-size: 1rem;
-    color: #666;
+    color: #7f8c8d; /* Softer gray for descriptions */
     margin-bottom: 15px;
 }
 
@@ -175,73 +200,35 @@ body {
 .service-button {
     display: inline-block;
     text-decoration: none;
-    background-color: #ff6f61;
+    background-color: #e74c3c; /* Vibrant red for buttons */
     color: white;
     padding: 10px 15px;
     border-radius: 8px;
     font-weight: 600;
-    transition: background 0.3s ease;
+    transition: background 0.3s ease, transform 0.3s ease;
 }
 
 .service-button:hover {
-    background-color: #e35d50;
+    background-color: #c0392b; /* Darker red on hover */
+    transform: scale(1.05); /* Slight scale effect on hover */
 }
+
 
 
 
 /* Gallery Section */
-/* Gallery Section */
-.gallery {
-    background-color: whitesmoke; /* Similar to other sections */
-    text-align: center;
-    padding: 60px 20px;
-}
 
-.gallery h2 {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 40px;
-}
-
-/* Fix for Gallery Container */
 .gallery-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Ensures 3 images per row */
-    gap: 20px; /* Space between images */
-    justify-content: center;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
 }
-
-/* Gallery Item */
-.gallery-item {
-    background: #f8f9fa;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.gallery-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-/* Gallery Image */
 .gallery-item img {
     width: 100%;
-    height: 250px;
-    object-fit: cover;
+    height: auto;
+    border-radius: 8px;
+    transition: transform 0.3s;
 }
-
-/* Responsive Design */
-@media (max-width: 992px) {
-    .gallery-container {
-        grid-template-columns: repeat(2, 1fr); /* 2 images per row on medium screens */
-    }
-}
-
-@media (max-width: 600px) {
-    .gallery-container {
-        grid-template-columns: repeat(1, 1fr); /* 1 image per row on small screens */
-    }
+.gallery-item img:hover {
+    transform: scale(1.05);
 }

@@ -52,71 +52,60 @@ User = get_user_model()  # Get the custom user model if using custom User model
 
 def register_view(request):
     if request.method == "POST":
-        username = request.POST.get("username")
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-        confirm_password = request.POST.get("confirm_password")
-        role = request.POST.get("role")  
-        business_category = request.POST.get("business_category")  # Get seller's category
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            email = form.cleaned_data["email"]
+            password = form.cleaned_data["password"]
+            role = form.cleaned_data["role"]
+            business_category = form.cleaned_data.get("business_category")
 
-        # Validate input
-        if not username or not email or not password or not confirm_password:
-            messages.error(request, "All fields are required.")
-            return redirect("register")
+            # Check if user already exists
+            if User.objects.filter(username=username).exists():
+                messages.error(request, "Username already taken. Choose another.")
+                return render(request, "Authentication/register.html", {"form": form})  # 🔹 Use `render()` instead of `redirect()`
 
-        if password != confirm_password:
-            messages.error(request, "Passwords do not match.")
-            return redirect("register")
+            # Check if email already exists
+            if User.objects.filter(email=email).exists():
+                messages.error(request, "Email already in use. Use another email.")
+                return render(request, "Authentication/register.html", {"form": form})
 
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already taken. Choose another.")
-            return redirect("register")
-
-        if User.objects.filter(email=email).exists():
-            messages.error(request, "Email already in use. Use another email.")
-            return redirect("register")
-
-        # Ensure role is valid
-        valid_roles = ["user", "seller", "admin", "guest"]
-        if role not in valid_roles:
-            messages.error(request, "Invalid role selected.")
-            return redirect("register")
-
-        # ✅ Create user and profile
-        try:
+            # Create user
             user = User.objects.create_user(username=username, email=email, password=password)
-            login(request, user)  # Automatically log in the user after registration
-            
-            # ✅ Create the appropriate profile
+            login(request, user)
+
             if role == "seller":
                 if not business_category:
                     messages.error(request, "Business category is required for sellers.")
                     return redirect("register")
                 SellerProfile.objects.create(user=user, business_category=business_category)
                 messages.success(request, "Seller account created successfully!")
-                return redirect("seller_dashboard")
+                send_welcome_email(user)  # Send email
+                return redirect("sellerdashboard")
 
             elif role == "user":
                 UserProfile.objects.create(user=user)
                 messages.success(request, "User account created successfully!")
+                send_welcome_email(user)  # Send email
                 return redirect("user_dashboard")
 
             else:
                 messages.success(request, "Account created! Please log in.")
+                send_welcome_email(user)  # Send email
                 return redirect("login")
+        else:
+            # Show form errors
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = SignupForm()
 
-        except Exception as e:
-            messages.error(request, f"An error occurred: {e}")
-            return redirect("register")
+    return render(request, "Authentication/register.html", {"form": form})
 
-    return render(request, "Authentication/register.html")
-
-
-def send_welcome_email(user_email):
+def send_welcome_email(user):
     subject = "Welcome to Wedding Organizer"
     message = "Thank you for registering on our platform."
     from_email = 'inachand920@gmail.com'  # This should match DEFAULT_FROM_EMAIL
-    recipient_list = [user_email]
+    recipient_list = [user.email]
 
     send_mail(subject, message, from_email, recipient_list)
 

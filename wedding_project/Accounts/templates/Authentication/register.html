@@ -6,6 +6,20 @@
 {% block content %}
 <link rel="stylesheet" type="text/css" href="{% static 'Authentication/css/register.css' %}">
 
+{% if form.errors %}
+    <div class="alert alert-danger">
+        <strong>Please correct the following errors:</strong>
+        <ul>
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    <li>{{ field|title }}: {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+
 <div class="container mt-5">
     <h2 class="text-center">Create Your Account</h2>
     <form method="POST" action="{% url 'register' %}">

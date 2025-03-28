@@ -1,83 +1,46 @@
-/* Reset default margin and padding */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-/* Header container with an elegant gradient */
+/* header.css */
 .header-container {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    background: linear-gradient(to right, #fff5f8, #fddede); /* Soft pink gradient */
-    padding: 15px 30px;
-    border-bottom: 3px solid #d1a3a4; /* Subtle rose-gold border */
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    justify-content: space-between;
+    padding: 20px;
+    background-color: #f8f9fa; /* Light background for a modern look */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
 }
 
-/* Logo Styling */
 .logo img {
-    width: 130px;
-    height: auto;
-    transition: transform 0.3s ease-in-out;
+    height: 70px; /* Slightly larger logo */
+    transition: transform 0.3s;
 }
 
 .logo img:hover {
-    transform: scale(1.1);
+    transform: scale(1.1); /* More pronounced hover effect */
 }
 
-/* Centered Search Bar */
 .search-bar {
     flex-grow: 1;
-    display: flex;
-    justify-content: center;
+    margin: 0 20px;
 }
 
 .search-bar input {
-    width: 60%;
-    max-width: 450px;
-    padding: 10px 15px;
-    font-size: 16px;
-    border: 2px solid #d1a3a4;
-    border-radius: 25px;
-    outline: none;
-    text-align: center;
-    background: #fff;
-    transition: all 0.3s ease;
+    width: 100%;
+    padding: 14px; /* Increased padding for better touch targets */
+    border: 2px solid #007bff;
+    border-radius: 30px; /* More rounded corners */
+    font-size: 18px; /* Larger font size for readability */
+    transition: border-color 0.3s, box-shadow 0.3s; /* Added box-shadow transition */
 }
 
 .search-bar input:focus {
-    border-color: #a66b6b; /* Darker rose shade */
-    box-shadow: 0 0 8px rgba(166, 107, 107, 0.5);
+    border-color: #0056b3;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Subtle glow effect on focus */
 }
 
-/* Email ID Styling */
-.email-id p {
-    font-size: 16px;
-    color: #8b5e5e; /* Deep rose-gold */
-    font-weight: bold;
-    letter-spacing: 0.5px;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .header-container {
-        flex-direction: column;
-        text-align: center;
-        padding: 20px;
-    }
-
-    .search-bar {
-        width: 100%;
-        margin: 10px 0;
-    }
-
-    .search-bar input {
-        width: 80%;
-    }
-
-    .email-id p {
-        font-size: 14px;
-    }
+.email-id {
+    font-size: 18px; /* Increased font size */
+    color: #343a40; /* Darker color for better contrast */
+    font-weight: 600; /* Bolder font weight */
+    text-align: right;
 }

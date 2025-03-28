@@ -8,7 +8,11 @@
             <input type="text" placeholder="Search venues...">
         </div>
         <div class="email-id">
-            <p>info@wedding.com</p>
+            {% if user.is_authenticated %}
+                <p>{{ user.email }}</p>
+            {% else %}
+                <p>Guest User</p>
+            {% endif %}
         </div>
     </div>
 </header>

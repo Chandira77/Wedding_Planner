@@ -65,7 +65,7 @@ class SellerProfile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)  # New field
 
     def __str__(self):
-        return self.business_name
+        return f"{self.user.username} - {self.business_category}"
     
 
 
